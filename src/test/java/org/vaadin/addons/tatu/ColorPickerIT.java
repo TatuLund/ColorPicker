@@ -1,5 +1,7 @@
 package org.vaadin.addons.tatu;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import com.vaadin.flow.component.customfield.testbench.CustomFieldElement;
 import com.vaadin.flow.component.notification.testbench.NotificationElement;
 import com.vaadin.flow.component.radiobutton.testbench.RadioButtonGroupElement;
 import com.vaadin.testbench.TestBenchElement;
+import com.vaadin.testbench.screenshot.ImageFileUtil;
 
 public class ColorPickerIT extends AbstractViewTest {
 
@@ -35,7 +38,7 @@ public class ColorPickerIT extends AbstractViewTest {
         combo = colorPicker.$(ComboBoxElement.class).first();
         field = colorPicker.$(CustomFieldElement.class).first();
         options = $(RadioButtonGroupElement.class).first();
-        variants = $("vaadin-checkbox-group").first();
+        variants = $(TestBenchElement.class).first();
     }
 
     @Test
@@ -99,6 +102,18 @@ public class ColorPickerIT extends AbstractViewTest {
         compact.setChecked(true);
         ComboBoxElement combo = colorPicker.$(ComboBoxElement.class).first();
         waitForElementInvisible(combo);
+    }
+
+    @Test
+    public void colorPickerOpenScreenshotTest() throws IOException {
+        combo.openPopup();
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil.getReferenceScreenshotFile("color-picker.png")));
+    }
+
+    @Test
+    public void colorPickerInvalidScreenshotTest() throws IOException {
+        options.selectByText("Invalid");
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil.getReferenceScreenshotFile("color-picker-invalid.png")));
     }
 
     protected void waitForElementInvisible(final WebElement element) {

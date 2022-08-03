@@ -6,6 +6,7 @@ import { comboBoxRenderer, ComboBoxLitRenderer } from '@vaadin/combo-box/lit.js'
 import { ComboBoxChangeEvent, ComboBoxCustomValueSetEvent, ComboBox } from '@vaadin/combo-box/vaadin-combo-box.js';
 import '@vaadin/custom-field';
 
+// Type that corresponds to ColorPreset type in ColorPicker.java
 interface Preset {
 	color : string;
 	caption : string;
@@ -30,6 +31,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 
   _comboBox : ComboBox | null = null;
 
+  // This is needed just for ThemableMixin
   static get is() {
     return 'color-picker';
   }
@@ -182,7 +184,6 @@ export class ColorPicker extends ThemableMixin(LitElement) {
               @custom-value-set=${this._cssColorInput}
               ${comboBoxRenderer(this.renderer, [])}
             ></vaadin-combo-box>
-		</vaadin-custom-field>
     `;
   }
 

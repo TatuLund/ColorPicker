@@ -1,13 +1,19 @@
 package org.vaadin.addons.tatu;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+
+import java.util.Objects;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import com.vaadin.testbench.Parameters;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
 import com.vaadin.testbench.TestBenchTestCase;
@@ -51,8 +57,19 @@ public abstract class AbstractViewTest extends TestBenchTestCase {
 
     @Before
     public void setup() throws Exception {
-        setDriver(TestBench.createDriver(new ChromeDriver()));
+        ChromeOptions options = new ChromeOptions();
+        options.setHeadless(true);
+        setDriver(TestBench.createDriver(new ChromeDriver(options)));
         getDriver().get(getURL(route));
+
+        // We do screenshot testing, adjust settings to ensure less flakiness
+        Parameters.setScreenshotComparisonTolerance(0.05);
+        Parameters.setScreenshotComparisonCursorDetection(true);
+        testBench().resizeViewPortTo(800, 600);
+        Parameters.setMaxScreenshotRetries(2);
+        Parameters.setScreenshotRetryDelay(1000); 
+        
+        // Wait for frontend compilation complete before testing
         waitForDevServer();
     }
 
@@ -105,4 +122,10 @@ public abstract class AbstractViewTest extends TestBenchTestCase {
         waitUntil(ExpectedConditions.presenceOfElementLocated(by));
     }
 
+    protected void scrollToElement(WebElement element) {
+        Objects.requireNonNull(element,
+                "The element to scroll to should not be null");
+        getCommandExecutor().executeScript("arguments[0].scrollIntoView(true);",
+                element);
+    }
 }
