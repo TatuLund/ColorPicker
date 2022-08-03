@@ -1,6 +1,8 @@
 package org.vaadin.addons.tatu;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +41,7 @@ public class ColorPickerIT extends AbstractViewTest {
         field = colorPicker.$(CustomFieldElement.class).first();
         options = $(RadioButtonGroupElement.class).first();
         variants = $(TestBenchElement.class).first();
+        $("vaadin-dev-tools").first().setProperty("hidden", true); // Hides devmode gizmo
     }
 
     @Test
@@ -112,7 +115,7 @@ public class ColorPickerIT extends AbstractViewTest {
 
     @Test
     public void colorPickerInvalidScreenshotTest() throws IOException {
-        options.selectByText("Invalid");
+        options.selectByText("Invalid");        
         Assert.assertTrue(testBench().compareScreen(ImageFileUtil.getReferenceScreenshotFile("color-picker-invalid.png")));
     }
 

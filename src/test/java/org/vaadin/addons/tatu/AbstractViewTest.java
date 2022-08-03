@@ -66,7 +66,7 @@ public abstract class AbstractViewTest extends TestBenchTestCase {
         Parameters.setScreenshotComparisonTolerance(0.05);
         Parameters.setScreenshotComparisonCursorDetection(true);
         testBench().resizeViewPortTo(800, 600);
-        Parameters.setMaxScreenshotRetries(2);
+        Parameters.setMaxScreenshotRetries(3);
         Parameters.setScreenshotRetryDelay(1000); 
         
         // Wait for frontend compilation complete before testing
