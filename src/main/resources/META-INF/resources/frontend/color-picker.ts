@@ -162,28 +162,29 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 		  part="field"
 		  id="customfield" 
           class="container"
-          label="${this.label}" 
+          .label="${this.label}" 
           .helperText="${this.helperText}"
           .errorMessage="${this.errorMessage}"
           .invalid="${this.invalid}">
 
-			<input
-			  id="colorpicker"
-	          name="colorpicker"
-              type="color" 
-              .value="${this.color}"
-              @change=${this._handleChange}
-            ><vaadin-combo-box
-              theme="${this.theme}"
-			  .invalid="${this.invalid}""
-			  id='combobox'
-			  allow-custom-value 
-	          .items="${this.presets}""
-              item-label-path="caption"
-              @change=${this._handlePreset}
-              @custom-value-set=${this._cssColorInput}
-              ${comboBoxRenderer(this.renderer, [])}
-            ></vaadin-combo-box>
+		  <input
+            id="colorpicker"
+            part="colorpicker"
+            type="color" 
+            .value="${this.color}"
+            @change=${this._handleChange}
+          ><vaadin-combo-box
+            part="dropdown"
+            theme="${this.theme}"
+            .invalid="${this.invalid}""
+	        id='combobox'
+       	    allow-custom-value 
+            .items="${this.presets}""
+            item-label-path="caption"
+            @change=${this._handlePreset}
+            @custom-value-set=${this._cssColorInput}
+            ${comboBoxRenderer(this.renderer, [])}
+          ></vaadin-combo-box>
     `;
   }
 

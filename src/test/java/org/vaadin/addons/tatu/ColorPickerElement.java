@@ -1,0 +1,34 @@
+package org.vaadin.addons.tatu;
+
+import com.vaadin.flow.component.combobox.testbench.ComboBoxElement;
+import com.vaadin.flow.component.customfield.testbench.CustomFieldElement;
+import com.vaadin.testbench.HasHelper;
+import com.vaadin.testbench.TestBenchElement;
+import com.vaadin.testbench.elementsbase.Element;
+
+@Element("color-picker")
+public class ColorPickerElement extends TestBenchElement implements HasHelper {
+
+    public ComboBoxElement getComboBox() {
+        return this.$(ComboBoxElement.class).first();
+    }
+
+    public CustomFieldElement getFieldWrapper() {
+        return this.$(CustomFieldElement.class).first();
+    }
+
+    public TestBenchElement getPicker() {
+        return getFieldWrapper().$("input").first();
+    }
+
+    @Override
+    public String getHelperText() {
+        return getFieldWrapper().getHelperText();
+    }
+
+    @Override
+    public TestBenchElement getHelperComponent() {
+        return getFieldWrapper().getHelperComponent();
+    }
+
+}

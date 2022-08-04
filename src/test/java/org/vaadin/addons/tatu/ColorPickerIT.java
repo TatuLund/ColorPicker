@@ -1,14 +1,10 @@
 package org.vaadin.addons.tatu;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -22,7 +18,7 @@ import com.vaadin.testbench.screenshot.ImageFileUtil;
 
 public class ColorPickerIT extends AbstractViewTest {
 
-    private TestBenchElement colorPicker;
+    private ColorPickerElement colorPicker;
     private ComboBoxElement combo;
     private CustomFieldElement field;
     private RadioButtonGroupElement options;
@@ -36,42 +32,97 @@ public class ColorPickerIT extends AbstractViewTest {
     @Override
     public void setup() throws Exception {
         super.setup();
-        colorPicker = $("color-picker").first();
-        combo = colorPicker.$(ComboBoxElement.class).first();
-        field = colorPicker.$(CustomFieldElement.class).first();
+        colorPicker = $(ColorPickerElement.class).first();
+        combo = colorPicker.getComboBox();
+        field = colorPicker.getFieldWrapper();
         options = $(RadioButtonGroupElement.class).first();
         variants = $(TestBenchElement.class).first();
-        $("vaadin-dev-tools").first().setProperty("hidden", true); // Hides devmode gizmo
+
+        // Hide dev mode gizmo, it would interfere screenshot tests
+        $("vaadin-dev-tools").first().setProperty("hidden", true);
     }
 
     @Test
     public void componentWorks() {
         Assert.assertTrue(
                 colorPicker.$(TestBenchElement.class).all().size() > 0);
+        TestBenchElement picker = colorPicker.getPicker();
+        Assert.assertEquals("Input is not a color picker", "color",
+                picker.getAttribute("type"));
     }
 
     @Test
     public void presetWorks() {
         combo.selectByText("Color 1");
         NotificationElement notification = $(NotificationElement.class).last();
-        Assert.assertEquals("color is not #00ff00", "#00ff00",
+        Assert.assertEquals("Color was not set", "#00ff00",
                 notification.getText());
+        Assert.assertEquals("Color value was not propagated to picker",
+                "#00ff00", colorPicker.getPicker().getPropertyString("value"));
     }
 
     @Test
-    public void cssInputWorks() {
+    public void cssInputWorksByName() {
         combo.focus();
         combo.sendKeys("blue");
         blur();
         NotificationElement notification = $(NotificationElement.class).last();
-        Assert.assertEquals("color is not #0000ff", "#0000ff",
+        Assert.assertEquals("Color was not converted correctly", "#0000ff",
                 notification.getText());
+        Assert.assertEquals("Color value was not propagated to picker",
+                "#0000ff", colorPicker.getPicker().getPropertyString("value"));
+        combo.focus();
+        combo.sendKeys("blue");
+        blur();
+        WebElement events = findElement(By.id("events"));
+        Assert.assertEquals(
+                "New input with same value should not trigger new value change event",
+                "1", events.getText());
+    }
+
+    @Test
+    public void cssInputWorksByRGB() {
+        combo.focus();
+        combo.sendKeys("rgb(0,255,255)");
+        blur();
+        NotificationElement notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Color was not converted correctly", "#00ffff",
+                notification.getText());
+        Assert.assertEquals("Color value was not propagated to picker",
+                "#00ffff", colorPicker.getPicker().getPropertyString("value"));
+    }
+
+    @Test
+    public void cssInputWorksByHSL() {
+        combo.focus();
+        combo.sendKeys("hsl(89, 43%, 51%)");
+        blur();
+        NotificationElement notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Color was not converted correctly", "#84b84c",
+                notification.getText());
+        Assert.assertEquals("Color value was not propagated to picker",
+                "#84b84c", colorPicker.getPicker().getPropertyString("value"));
+    }
+
+    @Test
+    public void invalidCssInputConvertsToBlack() {
+        options.selectByText("Value");
+
+        combo.focus();
+        combo.sendKeys("weriuouwqero");
+        blur();
+        NotificationElement notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Color was not converted correctly", "#000000",
+                notification.getText());
+        Assert.assertEquals("Color value was changed while it should not",
+                "#000000", colorPicker.getPicker().getPropertyString("value"));
+
     }
 
     @Test
     public void helperTextWorks() {
         options.selectByText("Helper");
-        String helperText = field.getPropertyString("helperText");
+        String helperText = colorPicker.getHelperText();
         Assert.assertEquals("Helper text is not correct.",
                 "Use this field to input a color.", helperText);
     }
@@ -90,13 +141,15 @@ public class ColorPickerIT extends AbstractViewTest {
     }
 
     @Test
-    public void setValueWorks() {
+    public void setValueFromServerWorks() {
         options.selectByText("Value");
         NotificationElement notification = $(NotificationElement.class).last();
-        Assert.assertEquals("color is not #ffffff", "#ffffff",
+        Assert.assertEquals("Value change did not have right color", "#ffffff",
                 notification.getText());
-        Assert.assertEquals("property color is not #ffffff", "#ffffff",
+        Assert.assertEquals("Color property was not set", "#ffffff",
                 colorPicker.getProperty("color"));
+        Assert.assertEquals("Color value was not propagated to picker",
+                "#ffffff", colorPicker.getPicker().getPropertyString("value"));
     }
 
     @Test
@@ -110,13 +163,24 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerOpenScreenshotTest() throws IOException {
         combo.openPopup();
-        Assert.assertTrue(testBench().compareScreen(ImageFileUtil.getReferenceScreenshotFile("color-picker.png")));
+        Assert.assertTrue(testBench().compareScreen(
+                ImageFileUtil.getReferenceScreenshotFile("color-picker.png")));
     }
 
     @Test
     public void colorPickerInvalidScreenshotTest() throws IOException {
-        options.selectByText("Invalid");        
-        Assert.assertTrue(testBench().compareScreen(ImageFileUtil.getReferenceScreenshotFile("color-picker-invalid.png")));
+        options.selectByText("Invalid");
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+                .getReferenceScreenshotFile("color-picker-invalid.png")));
+    }
+
+    @Test
+    public void colorPickerLabelWorks() {
+        Assert.assertEquals("Initial label was not propagated", "Color",
+                field.getLabel());
+        field.setProperty("label", "Pick a color");
+        Assert.assertEquals("Label update was not propagated", "Pick a color",
+                field.getLabel());
     }
 
     protected void waitForElementInvisible(final WebElement element) {

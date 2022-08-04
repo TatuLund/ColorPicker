@@ -6,6 +6,7 @@ import org.vaadin.addons.tatu.ColorPicker.ColorPickerVariant;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
 
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -14,15 +15,22 @@ import com.vaadin.flow.router.Route;
 @Route("")
 public class View extends VerticalLayout {
 
+    private int eventCount = 0;
+
     public View() {
         setSizeFull();
 
+        Span events = new Span();
+        events.setId("events");
+        
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.setLabel("Color");
         colorPicker.setPresets(Arrays.asList(new ColorPreset("#00ff00","Color 1"),new ColorPreset("#ff0000","Color 2")));
         
         colorPicker.addValueChangeListener(event -> {
             Notification.show(event.getValue());
+            eventCount++;
+            events.setText(""+eventCount);
         });
 
         RadioButtonGroup<String> helper = new RadioButtonGroup<>("Options");
@@ -66,6 +74,6 @@ public class View extends VerticalLayout {
             event.getValue().forEach(variant -> colorPicker.addThemeVariants(variant));
         });
         
-        add(colorPicker, helper, variants);
+        add(colorPicker, helper, variants, events);
     }
 }

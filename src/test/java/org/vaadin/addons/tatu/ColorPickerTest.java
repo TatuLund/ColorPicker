@@ -6,6 +6,7 @@ import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,6 +33,17 @@ public class ColorPickerTest {
                 colorJson.getString("color"));
         Assert.assertEquals("Caption is not correct", "Color 2",
                 colorJson.getString("caption"));
+    }
+
+    @Test
+    public void setValue_valueChangeIsTriggered() {
+        ColorPicker colorPicker = new ColorPicker();
+        AtomicInteger count = new AtomicInteger(0);
+        colorPicker.addValueChangeListener(event -> {
+            count.addAndGet(1);
+        });
+        colorPicker.setValue("#ffffff");
+        Assert.assertEquals("Value change was not triggered", 1, count.get());
     }
 
     @Test(expected = IllegalArgumentException.class)
