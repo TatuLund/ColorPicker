@@ -25,9 +25,9 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   @property()
   errorMessage = null;
   @property({reflect: true})
-  invalid = undefined;
+  invalid : string | undefined = undefined;
   @property({reflect: true})
-  compact = undefined;
+  compact : string | undefined = undefined;
 
   _comboBox : ComboBox | null = null;
 
