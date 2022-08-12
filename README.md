@@ -11,6 +11,15 @@ The component has design that fits Vaadin family of components, aka Lumo desing 
 * Dropdown can be populated by color presets
 * Small, compact, etc. theme variants
 
+## Unit and integration tests
+
+Primary motivation of this add-on is to demonstrate how to implement unit and integation
+tests for Vaadin add-on or custom component. This add-on features full test suite
+
+* Unit testing the server side Java code
+* TestBench based integration tests of the web-component part
+* Visual screen shot tests with TestBench verifying the styles
+
 ## Development instructions
 
 JavaScript modules can either be published as an NPM package or be kept as local 
