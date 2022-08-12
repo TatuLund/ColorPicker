@@ -25,9 +25,13 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   @property()
   errorMessage = null;
   @property({reflect: true})
-  invalid : string | undefined = undefined;
+  invalid : boolean | undefined = undefined;
   @property({reflect: true})
-  compact : string | undefined = undefined;
+  compact : boolean | undefined = undefined;
+  @property({reflect: true})
+  readonly : boolean | undefined = undefined;
+  @property({reflect: true})
+  disabled : boolean | undefined = undefined;
 
   _comboBox : ComboBox | null = null;
 
@@ -57,9 +61,9 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             height: var(--lumo-text-field-size);
 			border-radius: var(--lumo-border-radius-m);
 			border-width: 0px;
-    		background: var(--lumo-contrast-10pct);
+    		background: var(--lumo-contrast-20pct);
 		}
-		#colorpicker:hover {
+		#colorpicker(not([disabled])):hover {
     		background: var(--lumo-contrast-30pct);
 		}
 		:host([theme~="compact"]) #combobox {
@@ -67,6 +71,27 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 		}
         :host([invalid]) #colorpicker {
             background: var(--lumo-error-color-10pct);
+        }
+        :host([invalid][disabled]) #colorpicker {
+            background: var(--lumo-error-color-10pct);
+        }
+        :host([readonly][invalid]) #colorpicker {
+            background: var(--lumo-error-color-50pct);
+        }
+        :host([disabled]) #colorpicker {
+            background: var(--lumo-contrast-10pct);
+            pointer-events: none;
+        }
+        :host([readonly]) #colorpicker {
+            background: transparent; 
+            border: 1px dashed var(--lumo-contrast-30pct);
+            pointer-events: none;
+        }
+        :host([readonly][disabled]) #colorpicker {
+            background: var(--lumo-contrast-10pct); 
+        }
+        :host([invalid][readonly][disabled]) #colorpicker {
+            background: var(--lumo-error-color-50pct);
         }
     `;
   }
@@ -165,20 +190,25 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           .label="${this.label}" 
           .helperText="${this.helperText}"
           .errorMessage="${this.errorMessage}"
+          .disabled="${this.disabled}"
+          .readonly="${this.readonly}"
           .invalid="${this.invalid}">
 
 		  <input
             id="colorpicker"
             part="colorpicker"
+            .disabled="${this.disabled}"
             type="color" 
             .value="${this.color}"
             @change=${this._handleChange}
           ><vaadin-combo-box
             part="dropdown"
-            theme="${this.theme}"
-            .invalid="${this.invalid}""
+            .theme="${this.theme}"
+            .invalid="${this.invalid}"
 	        id='combobox'
        	    allow-custom-value 
+            .readonly="${this.readonly}"
+            .disabled="${this.disabled}"
             .items="${this.presets}""
             item-label-path="caption"
             @change=${this._handlePreset}

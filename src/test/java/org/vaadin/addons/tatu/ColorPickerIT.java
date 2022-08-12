@@ -78,6 +78,13 @@ public class ColorPickerIT extends AbstractViewTest {
         Assert.assertEquals(
                 "New input with same value should not trigger new value change event",
                 "1", events.getText());
+        options.selectByText("Disabled");
+        combo.focus();
+        combo.sendKeys("blue");
+        blur();
+        Assert.assertEquals(
+                "New input in disabled should not trigger event",
+                "1", events.getText());
     }
 
     @Test
@@ -90,6 +97,14 @@ public class ColorPickerIT extends AbstractViewTest {
                 notification.getText());
         Assert.assertEquals("Color value was not propagated to picker",
                 "#00ffff", colorPicker.getPicker().getPropertyString("value"));
+        WebElement events = findElement(By.id("events"));
+        options.selectByText("Read only");
+        combo.focus();
+        combo.sendKeys("blue");
+        blur();
+        Assert.assertEquals(
+                "New input in readonly should not trigger event",
+                "1", events.getText());
     }
 
     @Test
@@ -172,6 +187,37 @@ public class ColorPickerIT extends AbstractViewTest {
         options.selectByText("Invalid");
         Assert.assertTrue(testBench().compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-invalid.png")));
+    }
+
+    @Test
+    public void colorPickerReadOnlyScreenshotTest() throws IOException {
+        options.selectByText("Read only");
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+                .getReferenceScreenshotFile("color-picker-readonly.png")));
+    }
+
+    @Test
+    public void colorPickerDisabledScreenshotTest() throws IOException {
+        options.selectByText("Disabled");
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+                .getReferenceScreenshotFile("color-picker-disabled.png")));
+    }
+
+    @Test
+    public void colorPickerReadOnlyDisabledScreenshotTest() throws IOException {
+        options.selectByText("Disabled");
+        options.selectByText("Read only");
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+                .getReferenceScreenshotFile("color-picker-readonly-disabled.png")));
+    }
+
+    @Test
+    public void colorPickerReadOnlyDisabledInvalidScreenshotTest() throws IOException {
+        options.selectByText("Invalid");
+        options.selectByText("Disabled");
+        options.selectByText("Read only");
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+                .getReferenceScreenshotFile("color-picker-readonly-disabled-invalid.png")));
     }
 
     @Test
