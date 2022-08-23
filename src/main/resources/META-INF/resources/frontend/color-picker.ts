@@ -62,10 +62,17 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 			border-radius: var(--lumo-border-radius-m);
 			border-width: 0px;
     		background: var(--lumo-contrast-20pct);
+    		width: 50px;
 		}
 		#colorpicker(not([disabled])):hover {
     		background: var(--lumo-contrast-30pct);
 		}
+		@-moz-document url-prefix() { 
+          #colorpicker {
+            padding-top: 4px;
+            padding-bottom: 4px;
+          }
+        }
 		:host([theme~="compact"]) #combobox {
 			display: none;
 		}
