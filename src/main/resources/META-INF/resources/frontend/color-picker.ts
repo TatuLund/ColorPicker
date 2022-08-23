@@ -34,6 +34,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   disabled : boolean | undefined = undefined;
 
   _comboBox : ComboBox | null = null;
+  _colorPicker : HTMLInputElement | null = null;
 
   // This is needed just for ThemableMixin
   static get is() {
@@ -63,6 +64,10 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 			border-width: 0px;
     		background: var(--lumo-contrast-20pct);
     		width: 50px;
+		}
+		#colorpicker:focus-visible {
+		    box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
+		    outline: unset;
 		}
 		#colorpicker(not([disabled])):hover {
     		background: var(--lumo-contrast-30pct);
@@ -107,6 +112,15 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     super.connectedCallback();
     const shadow = this.shadowRoot;
     this._comboBox = <ComboBox | null>shadow?.getElementById('combobox');
+    this._colorPicker = <HTMLInputElement | null>shadow?.getElementById('colorpicker');
+  }
+
+  focus() {
+    if (!this.compact) {
+       this._comboBox?.focus();
+    } else {
+       this._colorPicker?.focus();
+    }
   }
 
   _colorToRGBA(color : string) : Uint8ClampedArray {

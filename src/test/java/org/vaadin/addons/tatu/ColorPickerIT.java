@@ -53,7 +53,7 @@ public class ColorPickerIT extends AbstractViewTest {
 
     @Test
     public void presetWorks() {
-        combo.selectByText("Color 1");
+        colorPicker.selectPreset("Color 1");
         NotificationElement notification = $(NotificationElement.class).last();
         Assert.assertEquals("Color was not set", "#00ff00",
                 notification.getText());
@@ -63,24 +63,24 @@ public class ColorPickerIT extends AbstractViewTest {
 
     @Test
     public void cssInputWorksByName() {
-        combo.focus();
-        combo.sendKeys("blue");
+        colorPicker.focus();
+        colorPicker.sendKeys("blue");
         blur();
         NotificationElement notification = $(NotificationElement.class).last();
         Assert.assertEquals("Color was not converted correctly", "#0000ff",
                 notification.getText());
         Assert.assertEquals("Color value was not propagated to picker",
                 "#0000ff", colorPicker.getPicker().getPropertyString("value"));
-        combo.focus();
-        combo.sendKeys("blue");
+        colorPicker.focus();
+        colorPicker.sendKeys("blue");
         blur();
         WebElement events = findElement(By.id("events"));
         Assert.assertEquals(
                 "New input with same value should not trigger new value change event",
                 "1", events.getText());
         options.selectByText("Disabled");
-        combo.focus();
-        combo.sendKeys("blue");
+        colorPicker.focus();
+        colorPicker.sendKeys("blue");
         blur();
         Assert.assertEquals(
                 "New input in disabled should not trigger event",
@@ -89,8 +89,8 @@ public class ColorPickerIT extends AbstractViewTest {
 
     @Test
     public void cssInputWorksByRGB() {
-        combo.focus();
-        combo.sendKeys("rgb(0,255,255)");
+    	colorPicker.focus();
+    	colorPicker.sendKeys("rgb(0,255,255)");
         blur();
         NotificationElement notification = $(NotificationElement.class).last();
         Assert.assertEquals("Color was not converted correctly", "#00ffff",
@@ -99,8 +99,8 @@ public class ColorPickerIT extends AbstractViewTest {
                 "#00ffff", colorPicker.getPicker().getPropertyString("value"));
         WebElement events = findElement(By.id("events"));
         options.selectByText("Read only");
-        combo.focus();
-        combo.sendKeys("blue");
+        colorPicker.focus();
+        colorPicker.sendKeys("blue");
         blur();
         Assert.assertEquals(
                 "New input in readonly should not trigger event",
@@ -109,8 +109,8 @@ public class ColorPickerIT extends AbstractViewTest {
 
     @Test
     public void cssInputWorksByHSL() {
-        combo.focus();
-        combo.sendKeys("hsl(89, 43%, 51%)");
+    	colorPicker.focus();
+    	colorPicker.sendKeys("hsl(89, 43%, 51%)");
         blur();
         NotificationElement notification = $(NotificationElement.class).last();
         Assert.assertEquals("Color was not converted correctly", "#84b84c",
@@ -123,8 +123,8 @@ public class ColorPickerIT extends AbstractViewTest {
     public void invalidCssInputConvertsToBlack() {
         options.selectByText("Value");
 
-        combo.focus();
-        combo.sendKeys("weriuouwqero");
+        colorPicker.focus();
+        colorPicker.sendKeys("weriuouwqero");
         blur();
         NotificationElement notification = $(NotificationElement.class).last();
         Assert.assertEquals("Color was not converted correctly", "#000000",

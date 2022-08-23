@@ -21,6 +21,14 @@ public class ColorPickerElement extends TestBenchElement implements HasHelper {
         return getFieldWrapper().$("input").first();
     }
 
+    public void sendKeys(CharSequence keysToSend) {
+        getComboBox().sendKeys(keysToSend);
+    }
+
+    public void selectPreset(String preset) {
+        getComboBox().selectByText(preset);
+    }
+
     @Override
     public String getHelperText() {
         return getFieldWrapper().getHelperText();

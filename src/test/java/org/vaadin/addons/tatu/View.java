@@ -96,8 +96,9 @@ public class View extends VerticalLayout {
             colorPicker.getThemeNames().clear();
             event.getValue()
                     .forEach(variant -> colorPicker.addThemeVariants(variant));
+            colorPicker.focus();
         });
-
+        
         add(colorPicker, helper, variants, events);
     }
 }
