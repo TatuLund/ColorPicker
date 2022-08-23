@@ -226,11 +226,11 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             part="dropdown"
             .theme="${this.theme}"
             .invalid="${this.invalid}"
-	        id='combobox'
+	        id="combobox"
        	    allow-custom-value 
             .readonly="${this.readonly}"
             .disabled="${this.disabled}"
-            .items="${this.presets}""
+            .items="${this.presets}"
             item-label-path="caption"
             @change=${this._handlePreset}
             @custom-value-set=${this._cssColorInput}
