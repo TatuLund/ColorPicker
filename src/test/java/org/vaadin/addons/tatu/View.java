@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.vaadin.addons.tatu.ColorPicker.ColorPickerVariant;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
+import org.vaadin.addons.tatu.ColorPicker.InputMode;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -98,7 +99,7 @@ public class View extends VerticalLayout {
                     .forEach(variant -> colorPicker.addThemeVariants(variant));
             colorPicker.focus();
         });
-        
+
         add(colorPicker, helper, variants, events);
     }
 }

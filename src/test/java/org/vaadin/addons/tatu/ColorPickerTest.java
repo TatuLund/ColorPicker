@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.vaadin.addons.tatu.ColorPicker.ColorPickerVariant;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
+import org.vaadin.addons.tatu.ColorPicker.InputMode;
 
 public class ColorPickerTest {
 
@@ -82,10 +83,30 @@ public class ColorPickerTest {
     public void addThemeVariant_removeThemeVariant_themeNamesDoesNotContainThemeVariant() {
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.addThemeVariants(ColorPickerVariant.LUMO_SMALL);
+        colorPicker.addThemeVariants(ColorPickerVariant.COMPACT);
+        ThemeList themeNames = colorPicker.getThemeNames();
+        Assert.assertTrue(themeNames
+                .contains(ColorPickerVariant.LUMO_SMALL.getVariantName()));
+        themeNames = colorPicker.getThemeNames();
+        Assert.assertTrue(themeNames
+                .contains(ColorPickerVariant.COMPACT.getVariantName()));
         colorPicker.removeThemeVariants(ColorPickerVariant.LUMO_SMALL);
 
-        ThemeList themeNames = colorPicker.getThemeNames();
+        themeNames = colorPicker.getThemeNames();
         Assert.assertFalse(themeNames
                 .contains(ColorPickerVariant.LUMO_SMALL.getVariantName()));
+        Assert.assertTrue(themeNames
+                .contains(ColorPickerVariant.COMPACT.getVariantName()));
+    }
+
+    @Test
+    public void noCssInputPropertySet() {
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setInputMode(InputMode.NOCSSINPUT);
+        Assert.assertTrue(
+                colorPicker.getElement().getProperty("nocssinput") != null);
+        colorPicker.setInputMode(InputMode.PRESETANDCSS);
+        Assert.assertTrue(
+                colorPicker.getElement().getProperty("nocssinput") == null);
     }
 }

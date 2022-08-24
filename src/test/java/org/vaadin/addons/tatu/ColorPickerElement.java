@@ -39,4 +39,8 @@ public class ColorPickerElement extends TestBenchElement implements HasHelper {
         return getFieldWrapper().getHelperComponent();
     }
 
+    public void openPopup() {
+        getComboBox().openPopup();
+    }
+
 }

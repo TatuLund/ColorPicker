@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
-import { customElement, property } from 'lit/decorators';
+import { customElement, property } from 'lit/decorators.js';
 import '@vaadin/combo-box';
 import { comboBoxRenderer, ComboBoxLitRenderer } from '@vaadin/combo-box/lit.js';
 import { ComboBoxChangeEvent, ComboBoxCustomValueSetEvent, ComboBox } from '@vaadin/combo-box/vaadin-combo-box.js';
@@ -24,6 +24,9 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   helperText = null;
   @property()
   errorMessage = null;
+  @property()
+  nocssinput : boolean | undefined = undefined;
+
   @property({reflect: true})
   invalid : boolean | undefined = undefined;
   @property({reflect: true})
@@ -111,8 +114,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   connectedCallback() {
     super.connectedCallback();
     const shadow = this.shadowRoot;
-    this._comboBox = <ComboBox | null>shadow?.getElementById('combobox');
-    this._colorPicker = <HTMLInputElement | null>shadow?.getElementById('colorpicker');
+    this._comboBox = <ComboBox | null>shadow?.getElementById("combobox");
+    this._colorPicker = <HTMLInputElement | null>shadow?.getElementById("colorpicker");
   }
 
   focus() {
@@ -123,7 +126,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     }
   }
 
-  _colorToRGBA(color : string) : Uint8ClampedArray {
+  protected _colorToRGBA(color : string) : Uint8ClampedArray {
     // Returns the color as an array of [r, g, b, a] -- all range from 0 - 255
     // color must be a valid canvas fillStyle. This will cover most anything
     // you'd want to use.
@@ -145,12 +148,12 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     }
   }
 
-  _byteToHex(num : number) : string {
+  protected _byteToHex(num : number) : string {
     // Turns a number (0-255) into a 2-character hex number (00-ff)
     return ('0'+num.toString(16)).slice(-2);
   }
 
-  _colorToHex(color : string) : string {
+  protected _colorToHex(color : string) : string {
     // Convert any CSS color to a hex representation
     // Examples:
     // colorToHex('red')            # '#ff0000'
@@ -163,13 +166,13 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     return "#"+hex;
   }
 
-  _handleChange(e: any) {
+  protected _handleChange(e: any) {
 	// Color was picked from native input
 	this.color = e.target.value;
 	this._emitColorChanged();
   }
 
-  _handlePreset(e: ComboBoxChangeEvent<Preset>) {
+  protected _handlePreset(e: ComboBoxChangeEvent<Preset>) {
 	// Color was selected using preset
 	const preset = e.target.selectedItem;
 	if (preset) {
@@ -182,7 +185,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	}
   }
 
-  _emitColorChanged() {
+  protected _emitColorChanged() {
 	const event = new CustomEvent('color-changed', {
 		detail: this.color,
         composed: true,
@@ -192,11 +195,12 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	this.dispatchEvent(event);	
   }
 
-  _cssColorInput(e: ComboBoxCustomValueSetEvent) {
+  protected _cssColorInput(e: ComboBoxCustomValueSetEvent) {
 	// This function is called when custom value is input
 	// Conversion to hex is needed as native input does not allow
 	// other formats.
-	const cssColor = e.detail;	
+	if (this.nocssinput) return;
+	const cssColor = e.detail;
 	this.color = this._colorToHex(cssColor);
     this._emitColorChanged();
   }
@@ -227,7 +231,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             .theme="${this.theme}"
             .invalid="${this.invalid}"
 	        id="combobox"
-       	    allow-custom-value 
+            allow-custom-value
             .readonly="${this.readonly}"
             .disabled="${this.disabled}"
             .items="${this.presets}"

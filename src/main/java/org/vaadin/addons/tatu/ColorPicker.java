@@ -98,6 +98,13 @@ public class ColorPicker
     }
 
     /**
+     * Possible input modes for the field.
+     */
+    public enum InputMode {
+        NOCSSINPUT, PRESETANDCSS;
+    }
+
+    /**
      * Default constructor.
      */
     public ColorPicker() {
@@ -198,4 +205,17 @@ public class ColorPicker
                         .collect(Collectors.toList()));
     }
 
+    /**
+     * Defines the input mode of the text field.
+     * 
+     * @param inputMode
+     *            The input mode.
+     */
+    public void setInputMode(InputMode inputMode) {
+        if (inputMode == InputMode.NOCSSINPUT) {
+            getElement().setProperty("nocssinput", true);
+        } else {
+            getElement().removeProperty("nocssinput");
+        }
+    }
 }
