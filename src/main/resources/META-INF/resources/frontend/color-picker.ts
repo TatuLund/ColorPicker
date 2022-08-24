@@ -67,6 +67,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 			border-width: 0px;
     		background: var(--lumo-contrast-20pct);
     		width: 50px;
+    		flex-shrink: 0;
 		}
 		#colorpicker:focus-visible {
 		    box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
@@ -107,6 +108,13 @@ export class ColorPicker extends ThemableMixin(LitElement) {
         }
         :host([invalid][readonly][disabled]) #colorpicker {
             background: var(--lumo-error-color-50pct);
+        }
+        #wrapper {
+	        display: flex;
+	        align-items: end;
+        }
+        #combobox {
+	        flex-grow: 1;
         }
     `;
   }
@@ -219,6 +227,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           .readonly="${this.readonly}"
           .invalid="${this.invalid}">
 
+          <div id="wrapper">
 		  <input
             id="colorpicker"
             part="colorpicker"
@@ -240,6 +249,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             @custom-value-set=${this._cssColorInput}
             ${comboBoxRenderer(this.renderer, [])}
           ></vaadin-combo-box>
+          </div>
     `;
   }
 

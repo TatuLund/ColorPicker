@@ -49,7 +49,7 @@ public class View extends VerticalLayout {
 
         RadioButtonGroup<String> helper = new RadioButtonGroup<>("Options");
         helper.setItems("Helper", "Invalid", "Valid", "Error", "Value",
-                "Hidden", "Disabled", "Read only");
+                "Wide", "Disabled", "Read only");
         helper.setId("options");
         helper.addValueChangeListener(event -> {
             switch (event.getValue()) {
@@ -74,8 +74,8 @@ public class View extends VerticalLayout {
                 colorPicker.setValue("#ffffff");
                 break;
             }
-            case "Hidden": {
-                colorPicker.setVisible(false);
+            case "Wide": {
+                colorPicker.setWidth("400px");
                 break;
             }
             case "Disabled": {

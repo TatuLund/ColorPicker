@@ -209,6 +209,13 @@ public class ColorPickerIT extends AbstractViewTest {
     }
 
     @Test
+    public void colorPickerWideScreenshotTest() throws IOException {
+        options.selectByText("Wide");
+        Assert.assertTrue(testBench().compareScreen(
+                ImageFileUtil.getReferenceScreenshotFile("color-picker-wide.png")));
+    }
+
+    @Test
     public void colorPickerInvalidScreenshotTest() throws IOException {
         options.selectByText("Invalid");
         Assert.assertTrue(testBench().compareScreen(ImageFileUtil
