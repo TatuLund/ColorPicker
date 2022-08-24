@@ -96,7 +96,7 @@ public class ColorPickerIT extends AbstractViewTest {
                 "1", events.getText());
         options.selectByText("Disabled");
         colorPicker.focus();
-        colorPicker.sendKeys("blue");
+        colorPicker.sendKeys("brown");
         blur();
         Assert.assertEquals("New input in disabled should not trigger event",
                 "1", events.getText());
