@@ -22,6 +22,7 @@ public class ColorPickerIT extends AbstractViewTest {
     private CustomFieldElement field;
     private RadioButtonGroupElement options;
     private TestBenchElement variants;
+    private boolean sleep = false;
 
     public void blur() {
         executeScript(
@@ -204,6 +205,7 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerOpenScreenshotTest() throws IOException {
         colorPicker.openPopup();
+        sleep();
         Assert.assertTrue(testBench().compareScreen(
                 ImageFileUtil.getReferenceScreenshotFile("color-picker.png")));
     }
@@ -211,6 +213,7 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerWideScreenshotTest() throws IOException {
         options.selectByText("Wide");
+        sleep();
         Assert.assertTrue(testBench().compareScreen(
                 ImageFileUtil.getReferenceScreenshotFile("color-picker-wide.png")));
     }
@@ -218,6 +221,7 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerInvalidScreenshotTest() throws IOException {
         options.selectByText("Invalid");
+        sleep();
         Assert.assertTrue(testBench().compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-invalid.png")));
     }
@@ -225,6 +229,7 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerReadOnlyScreenshotTest() throws IOException {
         options.selectByText("Read only");
+        sleep();
         Assert.assertTrue(testBench().compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-readonly.png")));
     }
@@ -232,6 +237,7 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerDisabledScreenshotTest() throws IOException {
         options.selectByText("Disabled");
+        sleep();
         Assert.assertTrue(testBench().compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-disabled.png")));
     }
@@ -240,6 +246,7 @@ public class ColorPickerIT extends AbstractViewTest {
     public void colorPickerReadOnlyDisabledScreenshotTest() throws IOException {
         options.selectByText("Disabled");
         options.selectByText("Read only");
+        sleep();
         Assert.assertTrue(testBench()
                 .compareScreen(ImageFileUtil.getReferenceScreenshotFile(
                         "color-picker-readonly-disabled.png")));
@@ -247,10 +254,11 @@ public class ColorPickerIT extends AbstractViewTest {
 
     @Test
     public void colorPickerReadOnlyDisabledInvalidScreenshotTest()
-            throws IOException {
+            throws IOException, InterruptedException {
         options.selectByText("Invalid");
         options.selectByText("Disabled");
         options.selectByText("Read only");
+        sleep();
         Assert.assertTrue(testBench()
                 .compareScreen(ImageFileUtil.getReferenceScreenshotFile(
                         "color-picker-readonly-disabled-invalid.png")));
@@ -267,5 +275,15 @@ public class ColorPickerIT extends AbstractViewTest {
 
     protected void waitForElementInvisible(final WebElement element) {
         waitUntil(ExpectedConditions.invisibilityOf(element));
+    }
+    
+    private void sleep() {
+        if (!sleep) {
+            return;
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
     }
 }
