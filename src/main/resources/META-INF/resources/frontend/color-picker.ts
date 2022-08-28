@@ -127,6 +127,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   }
 
   focus() {
+	// Override focus to combobox when available
     if (!this.compact) {
        this._comboBox?.focus();
     } else {
@@ -214,6 +215,9 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   }
 
   render() {
+	// vaadin-custom-field is used as wrapper in order to have
+	// the common implementation of label, error message, helper
+	// text and required indicator.
     return html`
 		<vaadin-custom-field 
           theme="${this.theme}"
@@ -232,6 +236,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             id="colorpicker"
             part="colorpicker"
             .disabled="${this.disabled}"
+            theme="${this.theme}"
             type="color" 
             .value="${this.color}"
             @change=${this._handleChange}

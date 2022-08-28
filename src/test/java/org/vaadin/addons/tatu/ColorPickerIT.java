@@ -51,6 +51,14 @@ public class ColorPickerIT extends AbstractViewTest {
     }
 
     @Test
+    public void themeAttributeGetsPropagated() {
+        colorPicker.setProperty("theme", "theme");
+        Assert.assertEquals("theme",colorPicker.getComboBox().getAttribute("theme"));
+        Assert.assertEquals("theme",colorPicker.getPicker().getAttribute("theme"));
+        Assert.assertEquals("theme",colorPicker.getFieldWrapper().getAttribute("theme"));
+    }
+
+    @Test
     public void presetWorks() {
         colorPicker.selectPreset("Color 1");
         NotificationElement notification = $(NotificationElement.class).last();
