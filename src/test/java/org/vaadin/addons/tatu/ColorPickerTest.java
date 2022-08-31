@@ -109,4 +109,20 @@ public class ColorPickerTest {
         Assert.assertTrue(
                 colorPicker.getElement().getProperty("nocssinput") == null);
     }
+
+    @Test
+    public void invalidPropertySet() {
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setInvalid(true);
+        Assert.assertTrue(colorPicker.isInvalid());
+        colorPicker.setInvalid(false);
+        Assert.assertFalse(colorPicker.isInvalid());        
+    }
+
+    @Test
+    public void errorMessageSet() {
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setErrorMessage("This is an error");
+        Assert.assertEquals("This is an error",colorPicker.getErrorMessage());
+    }
 }
