@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js';
 import '@vaadin/combo-box';
 import { comboBoxRenderer, ComboBoxLitRenderer } from '@vaadin/combo-box/lit.js';
 import { ComboBoxChangeEvent, ComboBoxCustomValueSetEvent, ComboBox } from '@vaadin/combo-box/vaadin-combo-box.js';
@@ -36,8 +36,10 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   @property({reflect: true})
   disabled : boolean | undefined = undefined;
 
-  _comboBox : ComboBox | null = null;
-  _colorPicker : HTMLInputElement | null = null;
+  @query("#combobox")
+  _comboBox! : ComboBox;
+  @query("#coloropicker")
+  _colorPicker! : HTMLInputElement;
 
   // This is needed just for ThemableMixin
   static get is() {
@@ -117,13 +119,6 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	        flex-grow: 1;
         }
     `;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    const shadow = this.shadowRoot;
-    this._comboBox = <ComboBox | null>shadow?.getElementById("combobox");
-    this._colorPicker = <HTMLInputElement | null>shadow?.getElementById("colorpicker");
   }
 
   focus() {
