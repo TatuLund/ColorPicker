@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -38,7 +39,11 @@ public class ColorPickerIT extends AbstractViewTest {
         variants = $(TestBenchElement.class).first();
 
         // Hide dev mode gizmo, it would interfere screenshot tests
-        $("vaadin-dev-tools").first().setProperty("hidden", true);
+        try {
+            $("vaadin-dev-tools").first().setProperty("hidden", true);
+        } catch (NotFoundException e) {
+            
+        }
     }
 
     @Test

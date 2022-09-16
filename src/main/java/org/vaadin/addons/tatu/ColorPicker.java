@@ -1,5 +1,6 @@
 package org.vaadin.addons.tatu;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class ColorPicker
     /**
      * A preset color.
      */
-    public static class ColorPreset {
+    public static class ColorPreset implements Serializable {
         private String color;
         private String caption;
 

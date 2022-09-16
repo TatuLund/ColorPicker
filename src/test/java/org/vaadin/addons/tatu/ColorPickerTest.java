@@ -5,6 +5,9 @@ import com.vaadin.flow.dom.ThemeList;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -116,13 +119,25 @@ public class ColorPickerTest {
         colorPicker.setInvalid(true);
         Assert.assertTrue(colorPicker.isInvalid());
         colorPicker.setInvalid(false);
-        Assert.assertFalse(colorPicker.isInvalid());        
+        Assert.assertFalse(colorPicker.isInvalid());
     }
 
     @Test
     public void errorMessageSet() {
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.setErrorMessage("This is an error");
-        Assert.assertEquals("This is an error",colorPicker.getErrorMessage());
+        Assert.assertEquals("This is an error", colorPicker.getErrorMessage());
+    }
+
+    @Test
+    public void colorPickerSerializable() throws IOException {
+        ColorPicker colorPicker = new ColorPicker();
+        new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(colorPicker);
+    }
+
+    @Test
+    public void colorPresetSerializable() throws IOException {
+        ColorPreset preset = new ColorPreset("#00ff00", "Color 1");
+        new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(preset);
     }
 }
