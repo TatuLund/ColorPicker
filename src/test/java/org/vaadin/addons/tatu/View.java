@@ -1,6 +1,7 @@
 package org.vaadin.addons.tatu;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.vaadin.addons.tatu.ColorPicker.ColorPickerVariant;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
@@ -35,45 +36,40 @@ public class View extends VerticalLayout {
             events.setText("" + eventCount);
         });
 
-        RadioButtonGroup<String> helper = new RadioButtonGroup<>("Options");
+        CheckboxGroup<String> helper = new CheckboxGroup<>("Options");
         helper.setItems("Helper", "Invalid", "Valid", "Error", "Value", "Wide",
                 "Disabled", "Read only");
         helper.setId("options");
         helper.addValueChangeListener(event -> {
-            switch (event.getValue()) {
-            case "Helper": {
-                colorPicker.setInvalid(false);
+            Set<String> selected = event.getValue();
+            if (selected.contains("Helper")) {
                 colorPicker.setHelperText("Use this field to input a color.");
-                break;
             }
-            case "Invalid": {
+            if (selected.contains("Invalid")) {
                 colorPicker.setInvalid(true);
-                break;
             }
-            case "Valid": {
+            if (selected.contains("Valid")) {
+                colorPicker.setHelperText(null);
+                colorPicker.setReadOnly(false);
+                colorPicker.setEnabled(true);
+                colorPicker.setValue(null);
+                colorPicker.setWidth(null);
                 colorPicker.setInvalid(false);
-                break;
             }
-            case "Error": {
-                colorPicker.setHelperText("Error message.");
-                break;
+            if (selected.contains("Error")) {
+                colorPicker.setErrorMessage("Error message.");
             }
-            case "Value": {
+            if (selected.contains("Value")) {
                 colorPicker.setValue("#ffffff");
-                break;
             }
-            case "Wide": {
+            if (selected.contains("Wide")) {
                 colorPicker.setWidth("400px");
-                break;
             }
-            case "Disabled": {
+            if (selected.contains("Disabled")) {
                 colorPicker.setEnabled(false);
-                break;
             }
-            case "Read only": {
+            if (selected.contains("Read only")) {
                 colorPicker.setReadOnly(true);
-                break;
-            }
             }
         });
 

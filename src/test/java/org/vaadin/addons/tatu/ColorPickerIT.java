@@ -10,6 +10,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.checkbox.testbench.CheckboxElement;
+import com.vaadin.flow.component.checkbox.testbench.CheckboxGroupElement;
 import com.vaadin.flow.component.combobox.testbench.ComboBoxElement;
 import com.vaadin.flow.component.customfield.testbench.CustomFieldElement;
 import com.vaadin.flow.component.notification.testbench.NotificationElement;
@@ -21,8 +22,8 @@ public class ColorPickerIT extends AbstractViewTest {
 
     private ColorPickerElement colorPicker;
     private CustomFieldElement field;
-    private RadioButtonGroupElement options;
-    private TestBenchElement variants;
+    private CheckboxGroupElement options;
+    private CheckboxGroupElement variants;
     private boolean sleep = false;
 
     public void blur() {
@@ -35,8 +36,8 @@ public class ColorPickerIT extends AbstractViewTest {
         super.setup();
         colorPicker = $(ColorPickerElement.class).first();
         field = colorPicker.getFieldWrapper();
-        options = $(RadioButtonGroupElement.class).first();
-        variants = $(TestBenchElement.class).first();
+        options = $(CheckboxGroupElement.class).id("options");
+        variants = $(CheckboxGroupElement.class).id("variants");
 
         // Hide dev mode gizmo, it would interfere screenshot tests
         try {
@@ -186,7 +187,7 @@ public class ColorPickerIT extends AbstractViewTest {
     public void invalidAndErrorWorks() {
         options.selectByText("Invalid");
         options.selectByText("Error");
-        String errorMessage = field.getPropertyString("helperText");
+        String errorMessage = field.getPropertyString("errorMessage");
         Assert.assertEquals("Error text is not correct.", "Error message.",
                 errorMessage);
         Assert.assertEquals("ComboBox is not invalid.", true,
@@ -209,8 +210,7 @@ public class ColorPickerIT extends AbstractViewTest {
 
     @Test
     public void setVariantsWorks() {
-        CheckboxElement compact = variants.$(CheckboxElement.class).first();
-        compact.setChecked(true);
+        variants.selectByText("COMPACT");
         ComboBoxElement combo = colorPicker.getComboBox();
         waitForElementInvisible(combo);
     }

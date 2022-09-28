@@ -40,6 +40,13 @@ public class ColorPickerTest {
     }
 
     @Test
+    public void setValue_nullWorks() {
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setValue(null);
+        Assert.assertEquals(null, colorPicker.getValue());
+    }
+
+    @Test
     public void setValue_valueChangeIsTriggered() {
         ColorPicker colorPicker = new ColorPicker();
         AtomicInteger count = new AtomicInteger(0);

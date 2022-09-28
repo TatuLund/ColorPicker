@@ -114,7 +114,9 @@ public class ColorPicker
 
     @Override
     public void setValue(String value) {
-        if (value.matches("#......")) {
+        if (value == null) {
+            super.setValue(null);
+        } else if (value.matches("#......")) {
             super.setValue(value);
         } else {
             throw new IllegalArgumentException(
