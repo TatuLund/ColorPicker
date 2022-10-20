@@ -6,7 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.checkbox.testbench.CheckboxElement;
@@ -226,32 +228,28 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerWideScreenshotTest() throws IOException {
         options.selectByText("Wide");
-        sleep();
-        Assert.assertTrue(testBench().compareScreen(
+        Assert.assertTrue(colorPicker.compareScreen(
                 ImageFileUtil.getReferenceScreenshotFile("color-picker-wide.png")));
     }
 
     @Test
     public void colorPickerInvalidScreenshotTest() throws IOException {
         options.selectByText("Invalid");
-        sleep();
-        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+        Assert.assertTrue(colorPicker.compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-invalid.png")));
     }
 
     @Test
     public void colorPickerReadOnlyScreenshotTest() throws IOException {
         options.selectByText("Read only");
-        sleep();
-        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+        Assert.assertTrue(colorPicker.compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-readonly.png")));
     }
 
     @Test
     public void colorPickerDisabledScreenshotTest() throws IOException {
         options.selectByText("Disabled");
-        sleep();
-        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+        Assert.assertTrue(colorPicker.compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-disabled.png")));
     }
 
@@ -259,8 +257,7 @@ public class ColorPickerIT extends AbstractViewTest {
     public void colorPickerReadOnlyDisabledScreenshotTest() throws IOException {
         options.selectByText("Disabled");
         options.selectByText("Read only");
-        sleep();
-        Assert.assertTrue(testBench()
+        Assert.assertTrue(colorPicker
                 .compareScreen(ImageFileUtil.getReferenceScreenshotFile(
                         "color-picker-readonly-disabled.png")));
     }
@@ -271,8 +268,7 @@ public class ColorPickerIT extends AbstractViewTest {
         options.selectByText("Invalid");
         options.selectByText("Disabled");
         options.selectByText("Read only");
-        sleep();
-        Assert.assertTrue(testBench()
+        Assert.assertTrue(colorPicker
                 .compareScreen(ImageFileUtil.getReferenceScreenshotFile(
                         "color-picker-readonly-disabled-invalid.png")));
     }
