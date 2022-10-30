@@ -3,14 +3,13 @@ package org.vaadin.addons.tatu;
 import java.util.Arrays;
 import java.util.Set;
 
-import org.vaadin.addons.tatu.ColorPicker.ColorPickerVariant;
+import org.vaadin.addons.tatu.ColorPickerVariant;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
 
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.router.Route;
 
 @Route("")
@@ -31,7 +30,7 @@ public class View extends VerticalLayout {
                         new ColorPreset("#ff0000", "Color 2")));
 
         colorPicker.addValueChangeListener(event -> {
-            Notification.show(event.getValue());
+            Notification.show(""+event.getValue());
             eventCount++;
             events.setText("" + eventCount);
         });

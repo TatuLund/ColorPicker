@@ -3,8 +3,6 @@ package org.vaadin.addons.tatu;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.flow.component.AbstractSinglePropertyField;
 import com.vaadin.flow.component.Focusable;
@@ -19,6 +17,10 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.Uses;
+import com.vaadin.flow.component.shared.HasThemeVariant;
+import com.vaadin.flow.data.binder.HasValidator;
+import com.vaadin.flow.data.binder.ValidationResult;
+import com.vaadin.flow.data.binder.Validator;
 
 /**
  * A ColorPicker component.
@@ -27,10 +29,10 @@ import com.vaadin.flow.component.dependency.Uses;
 @Tag("color-picker")
 @Uses(ComboBox.class)
 @Uses(CustomField.class)
-public class ColorPicker
-        extends AbstractSinglePropertyField<ColorPicker, String>
-        implements HasSize, HasValidation, Focusable<ColorPicker>, HasHelper,
-        HasLabel, HasTheme, HasStyle {
+public class ColorPicker extends
+        AbstractSinglePropertyField<ColorPicker, String> implements HasSize,
+        HasValidation, Focusable<ColorPicker>, HasHelper, HasLabel, HasTheme,
+        HasStyle, HasThemeVariant<ColorPickerVariant>, HasValidator<String> {
 
     /**
      * A preset color.
@@ -43,9 +45,10 @@ public class ColorPicker
          * Constructor.
          * 
          * @param color
-         *            Color value in six digits hex string, e.g. #ffffff.
+         *            Color value in six digits hex string, e.g. #ffffff, not
+         *            null.
          * @param caption
-         *            Displayed name of the color.
+         *            Displayed name of the color, not null.
          */
         public ColorPreset(String color, String caption) {
             setColor(color);
@@ -65,7 +68,11 @@ public class ColorPicker
          * Set color value for the preset.
          * 
          * @param color
-         *            Color in six digits hex string, e.g. #ffffff.
+         *            Color in six digits hex string, e.g. #ffffff, not null.
+         * @throws IllegalArgumentException
+         *             when color string does not match pattern.
+         * @throws NullPointerException
+         *             when color is null.
          */
         public void setColor(String color) {
             Objects.requireNonNull(color, "color can't be null");
@@ -90,7 +97,9 @@ public class ColorPicker
          * Set the caption of the color.
          * 
          * @param caption
-         *            Displayed name of the color.
+         *            Displayed name of the color, not null.
+         * @throws NullPointerException
+         *             when caption is null
          */
         public void setCaption(String caption) {
             Objects.requireNonNull(caption, "caption can't be null");
@@ -124,39 +133,18 @@ public class ColorPicker
         }
     }
 
-    public enum ColorPickerVariant {
-        COMPACT("compact"), LUMO_SMALL("small"), LUMO_ALIGN_LEFT(
-                "align-left"), LUMO_ALIGN_CENTER(
-                        "align-center"), LUMO_ALIGN_RIGHT(
-                                "align-right"), LUMO_HELPER_ABOVE_FIELD(
-                                        "helper-above-field");
-
-        private final String variant;
-
-        ColorPickerVariant(String variant) {
-            this.variant = variant;
-        }
-
-        /**
-         * Gets the variant name.
-         *
-         * @return variant name
-         */
-        public String getVariantName() {
-            return variant;
-        }
-    }
-
     /**
      * Set predefined color presets.
      * 
      * @see ColorPreset
      * 
      * @param presets
-     *            List of ColorPreset.
+     *            List of ColorPreset, not null
+     * @throws NullPointerException
+     *             when presets is null
      */
     public void setPresets(List<ColorPreset> presets) {
-        Objects.requireNonNull(presets, "values can't be null");
+        Objects.requireNonNull(presets, "presets can't be null");
         getElement().setPropertyList("presets", presets);
     }
 
@@ -185,30 +173,6 @@ public class ColorPicker
     }
 
     /**
-     * Adds theme variants to the component.
-     *
-     * @param variants
-     *            theme variants to add
-     */
-    public void addThemeVariants(ColorPickerVariant... variants) {
-        getThemeNames().addAll(
-                Stream.of(variants).map(ColorPickerVariant::getVariantName)
-                        .collect(Collectors.toList()));
-    }
-
-    /**
-     * Removes theme variants from the component.
-     *
-     * @param variants
-     *            theme variants to remove
-     */
-    public void removeThemeVariants(ColorPickerVariant... variants) {
-        getThemeNames().removeAll(
-                Stream.of(variants).map(ColorPickerVariant::getVariantName)
-                        .collect(Collectors.toList()));
-    }
-
-    /**
      * Defines the input mode of the text field.
      * 
      * @param inputMode
@@ -219,6 +183,20 @@ public class ColorPicker
             getElement().setProperty("nocssinput", true);
         } else {
             getElement().removeProperty("nocssinput");
+        }
+    }
+
+    @Override
+    public Validator<String> getDefaultValidator() {
+        return (value, context) -> checkValidity(value);
+    }
+
+    private ValidationResult checkValidity(String value) {
+        boolean invalid = this.isInvalid() && value == null;
+        if (!invalid) {
+            return ValidationResult.ok();
+        } else {
+            return ValidationResult.error("Input is not a color");
         }
     }
 }

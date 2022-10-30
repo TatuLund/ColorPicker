@@ -1,5 +1,6 @@
 package org.vaadin.addons.tatu;
 
+import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.dom.ThemeList;
 
 import elemental.json.JsonArray;
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.vaadin.addons.tatu.ColorPicker.ColorPickerVariant;
+import org.vaadin.addons.tatu.ColorPickerVariant;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
 import org.vaadin.addons.tatu.ColorPicker.InputMode;
 
@@ -27,6 +28,8 @@ public class ColorPickerTest {
                         new ColorPreset("#ff0000", "Color 2")));
         JsonArray presetsJson = (JsonArray) colorPicker.getElement()
                 .getPropertyRaw("presets");
+        Assert.assertEquals("Array should have 2 items", 2,
+                presetsJson.length());
         JsonObject colorJson = presetsJson.get(0);
         Assert.assertEquals("Color is not correct", "#00ff00",
                 colorJson.getString("color"));
@@ -55,6 +58,7 @@ public class ColorPickerTest {
         });
         colorPicker.setValue("#ffffff");
         Assert.assertEquals("Value change was not triggered", 1, count.get());
+        Assert.assertEquals("Value is not #ffffff", "#ffffff", colorPicker.getValue());        
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -134,6 +138,8 @@ public class ColorPickerTest {
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.setErrorMessage("This is an error");
         Assert.assertEquals("This is an error", colorPicker.getErrorMessage());
+        colorPicker.setErrorMessage(null);
+        Assert.assertEquals(null, colorPicker.getErrorMessage());
     }
 
     @Test
@@ -146,5 +152,15 @@ public class ColorPickerTest {
     public void colorPresetSerializable() throws IOException {
         ColorPreset preset = new ColorPreset("#00ff00", "Color 1");
         new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(preset);
+    }
+
+    @Test
+    public void colorInvalid() {
+        ColorPicker colorPicker = new ColorPicker();
+        ValidationResult status = colorPicker.getDefaultValidator().apply(null, null);
+        Assert.assertFalse(status.isError());
+        colorPicker.setInvalid(true);
+        status = colorPicker.getDefaultValidator().apply(null, null);
+        Assert.assertTrue(status.isError());
     }
 }

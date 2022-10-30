@@ -1,6 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 import { customElement, property, query } from 'lit/decorators.js';
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import '@vaadin/combo-box';
 import { comboBoxRenderer, ComboBoxLitRenderer } from '@vaadin/combo-box/lit.js';
 import { ComboBoxChangeEvent, ComboBoxCustomValueSetEvent, ComboBox } from '@vaadin/combo-box/vaadin-combo-box.js';
@@ -17,7 +18,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   @property()
   label = '';
   @property()
-  color = '';
+  color : string | null = '';
   @property()
   presets : Preset[] = [];
   @property()
@@ -121,6 +122,12 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     `;
   }
 
+  _isColor(strColor: string) : boolean {
+    const s = new Option().style;
+    s.color = strColor;
+    return s.color !== '';
+  }
+
   focus() {
 	// Override focus to combobox when available
     if (!this.compact) {
@@ -173,6 +180,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   protected _handleChange(e: any) {
 	// Color was picked from native input
 	this.color = e.target.value;
+	console.log("Color: "+this.color);
 	this._emitColorChanged();
   }
 
@@ -181,15 +189,18 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	const preset = e.target.selectedItem;
 	if (preset) {
 		this.color = preset.color;
+	    this._emitColorChanged();
+		// Clear text input for better usability
 	}
-	this._emitColorChanged();
-	// Clear text input for better usability
 	if (this._comboBox) {
-	  this._comboBox.value='';
+		this._comboBox.value='';
 	}
   }
 
   protected _emitColorChanged() {
+	if (this.color) {
+    	this.removeAttribute('invalid');
+	}
 	const event = new CustomEvent('color-changed', {
 		detail: this.color,
         composed: true,
@@ -205,8 +216,14 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	// other formats.
 	if (this.nocssinput) return;
 	const cssColor = e.detail;
-	this.color = this._colorToHex(cssColor);
-    this._emitColorChanged();
+	if (this._isColor(cssColor)) {
+		this.color = this._colorToHex(cssColor);
+    	this._emitColorChanged();
+	} else {
+        this.setAttribute('invalid','');
+		this.color = null;
+    	this._emitColorChanged();
+	}
   }
 
   render() {
@@ -215,37 +232,37 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	// text and required indicator.
     return html`
 		<vaadin-custom-field 
-          theme="${this.theme}"
 		  part="field"
 		  id="customfield" 
           class="container"
           .label="${this.label}" 
           .helperText="${this.helperText}"
           .errorMessage="${this.errorMessage}"
-          ?readonly=${this.readonly}
-          .disabled=${this.disabled}
-          .invalid="${this.invalid}">
+          readonly=${ifDefined(this.readonly)}
+          disabled=${ifDefined(this.disabled)}
+          invalid=${ifDefined(this.invalid)}
+          theme="${ifDefined(this.theme)}">
 
           <div id="wrapper">
 		  <input
             id="colorpicker"
             part="colorpicker"
-            ?readonly=${this.readonly}
-            ?disabled=${this.disabled}
-            ?invalid=${this.invalid}
-            theme="${this.theme}"
+            readonly=${ifDefined(this.readonly)}
+            disabled=${ifDefined(this.disabled)}
+            invalid=${ifDefined(this.invalid)}
+            theme="${ifDefined(this.theme)}"
             type="color" 
             .value="${this.color}"
             @change=${this._handleChange}
           >
           <vaadin-combo-box
             part="dropdown"
-            .theme="${this.theme}"
-            .invalid="${this.invalid}"
 	        id="combobox"
             allow-custom-value
-            .readonly=${this.readonly}
-            .disabled=${this.disabled}
+            readonly=${ifDefined(this.readonly)}
+            disabled=${ifDefined(this.disabled)}
+            invalid=${ifDefined(this.invalid)}
+            theme="${ifDefined(this.theme)}"
             .items="${this.presets}"
             item-label-path="caption"
             @change=${this._handlePreset}

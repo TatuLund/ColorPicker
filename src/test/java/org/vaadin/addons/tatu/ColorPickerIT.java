@@ -5,18 +5,15 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.vaadin.flow.component.checkbox.testbench.CheckboxElement;
 import com.vaadin.flow.component.checkbox.testbench.CheckboxGroupElement;
 import com.vaadin.flow.component.combobox.testbench.ComboBoxElement;
 import com.vaadin.flow.component.customfield.testbench.CustomFieldElement;
 import com.vaadin.flow.component.notification.testbench.NotificationElement;
-import com.vaadin.flow.component.radiobutton.testbench.RadioButtonGroupElement;
 import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.screenshot.ImageFileUtil;
 
@@ -45,7 +42,7 @@ public class ColorPickerIT extends AbstractViewTest {
         try {
             $("vaadin-dev-tools").first().setProperty("hidden", true);
         } catch (NotFoundException e) {
-            
+
         }
     }
 
@@ -61,9 +58,12 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void themeAttributeGetsPropagated() {
         colorPicker.setProperty("theme", "theme");
-        Assert.assertEquals("theme",colorPicker.getComboBox().getAttribute("theme"));
-        Assert.assertEquals("theme",colorPicker.getPicker().getAttribute("theme"));
-        Assert.assertEquals("theme",colorPicker.getFieldWrapper().getAttribute("theme"));
+        Assert.assertEquals("theme",
+                colorPicker.getComboBox().getAttribute("theme"));
+        Assert.assertEquals("theme",
+                colorPicker.getPicker().getAttribute("theme"));
+        Assert.assertEquals("theme",
+                colorPicker.getFieldWrapper().getAttribute("theme"));
     }
 
     @Test
@@ -111,12 +111,13 @@ public class ColorPickerIT extends AbstractViewTest {
         Assert.assertEquals(
                 "New input with same value should not trigger new value change event",
                 "1", events.getText());
+    }
+
+    @Test(expected = ElementNotInteractableException.class)
+    public void disabledinput() {
         options.selectByText("Disabled");
         colorPicker.focus();
         colorPicker.sendKeys("brown");
-        blur();
-        Assert.assertEquals("New input in disabled should not trigger event",
-                "1", events.getText());
     }
 
     @Test
@@ -163,18 +164,19 @@ public class ColorPickerIT extends AbstractViewTest {
     }
 
     @Test
-    public void invalidCssInputConvertsToBlack() {
+    public void invalidCssInputIsDetected() {
         options.selectByText("Value");
 
         colorPicker.focus();
         colorPicker.sendKeys("weriuouwqero");
         blur();
         NotificationElement notification = $(NotificationElement.class).last();
-        Assert.assertEquals("Color was not converted correctly", "#000000",
+        Assert.assertEquals("Invalid input was not detected", "null",
                 notification.getText());
-        Assert.assertEquals("Color value was changed while it should not",
-                "#000000", colorPicker.getPicker().getPropertyString("value"));
-
+        Assert.assertEquals("New value should be null",
+                null, colorPicker.getPropertyString("color"));
+        Assert.assertEquals("New value should be null",
+                "", colorPicker.getPropertyString("invalid"));
     }
 
     @Test
@@ -228,8 +230,8 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void colorPickerWideScreenshotTest() throws IOException {
         options.selectByText("Wide");
-        Assert.assertTrue(colorPicker.compareScreen(
-                ImageFileUtil.getReferenceScreenshotFile("color-picker-wide.png")));
+        Assert.assertTrue(colorPicker.compareScreen(ImageFileUtil
+                .getReferenceScreenshotFile("color-picker-wide.png")));
     }
 
     @Test
@@ -285,7 +287,7 @@ public class ColorPickerIT extends AbstractViewTest {
     protected void waitForElementInvisible(final WebElement element) {
         waitUntil(ExpectedConditions.invisibilityOf(element));
     }
-    
+
     private void sleep() {
         if (!sleep) {
             return;
