@@ -238,7 +238,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           .label="${this.label}" 
           .helperText="${this.helperText}"
           .errorMessage="${this.errorMessage}"
-          readonly=${ifDefined(this.readonly)}
+          ?readonly=${this.readonly}
           disabled=${ifDefined(this.disabled)}
           invalid=${ifDefined(this.invalid)}
           theme="${ifDefined(this.theme)}">
@@ -247,7 +247,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 		  <input
             id="colorpicker"
             part="colorpicker"
-            readonly=${ifDefined(this.readonly)}
+            ?readonly=${this.readonly}
             disabled=${ifDefined(this.disabled)}
             invalid=${ifDefined(this.invalid)}
             theme="${ifDefined(this.theme)}"
@@ -259,7 +259,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             part="dropdown"
 	        id="combobox"
             allow-custom-value
-            readonly=${ifDefined(this.readonly)}
+            ?readonly=${this.readonly}
             disabled=${ifDefined(this.disabled)}
             invalid=${ifDefined(this.invalid)}
             theme="${ifDefined(this.theme)}"

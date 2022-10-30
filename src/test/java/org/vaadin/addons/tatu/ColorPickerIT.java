@@ -81,6 +81,12 @@ public class ColorPickerIT extends AbstractViewTest {
                 notification.getText());
         Assert.assertEquals("Color value was not propagated to picker",
                 "#ff0000", colorPicker.getPicker().getPropertyString("value"));
+        colorPicker.focus();
+        colorPicker.sendKeys("Color 1");
+        blur();
+        notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Color was not set", "#00ff00",
+                notification.getText());
     }
 
     @Test
@@ -173,10 +179,15 @@ public class ColorPickerIT extends AbstractViewTest {
         NotificationElement notification = $(NotificationElement.class).last();
         Assert.assertEquals("Invalid input was not detected", "null",
                 notification.getText());
-        Assert.assertEquals("New value should be null",
-                null, colorPicker.getPropertyString("color"));
-        Assert.assertEquals("New value should be null",
-                "", colorPicker.getPropertyString("invalid"));
+        Assert.assertEquals("New value should be null", null,
+                colorPicker.getPropertyString("color"));
+        Assert.assertEquals("New value should be null", "",
+                colorPicker.getPropertyString("invalid"));
+        colorPicker.focus();
+        colorPicker.sendKeys("blue");
+        blur();
+        Assert.assertEquals("New value should be null", null,
+                colorPicker.getPropertyString("invalid"));
     }
 
     @Test
@@ -223,8 +234,8 @@ public class ColorPickerIT extends AbstractViewTest {
     public void colorPickerOpenScreenshotTest() throws IOException {
         colorPicker.openPopup();
         sleep();
-        Assert.assertTrue(testBench().compareScreen(
-                ImageFileUtil.getReferenceScreenshotFile("color-picker.png")));
+        Assert.assertTrue(testBench().compareScreen(ImageFileUtil
+                .getReferenceScreenshotFile("color-picker-popup.png")));
     }
 
     @Test
@@ -246,6 +257,10 @@ public class ColorPickerIT extends AbstractViewTest {
         options.selectByText("Read only");
         Assert.assertTrue(colorPicker.compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-readonly.png")));
+        options.deselectByText("Read only");
+        options.selectByText("Valid");
+        Assert.assertTrue(colorPicker.compareScreen(
+                ImageFileUtil.getReferenceScreenshotFile("color-picker.png")));
     }
 
     @Test
@@ -253,6 +268,10 @@ public class ColorPickerIT extends AbstractViewTest {
         options.selectByText("Disabled");
         Assert.assertTrue(colorPicker.compareScreen(ImageFileUtil
                 .getReferenceScreenshotFile("color-picker-disabled.png")));
+        options.deselectByText("Disabled");
+        options.selectByText("Valid");
+        Assert.assertTrue(colorPicker.compareScreen(
+                ImageFileUtil.getReferenceScreenshotFile("color-picker.png")));
     }
 
     @Test
