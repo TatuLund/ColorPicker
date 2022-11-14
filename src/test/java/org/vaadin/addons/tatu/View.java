@@ -3,9 +3,9 @@ package org.vaadin.addons.tatu;
 import java.util.Arrays;
 import java.util.Set;
 
-import org.vaadin.addons.tatu.ColorPickerVariant;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -30,30 +30,22 @@ public class View extends VerticalLayout {
                         new ColorPreset("#ff0000", "Color 2")));
 
         colorPicker.addValueChangeListener(event -> {
-            Notification.show(""+event.getValue());
+            Notification.show("" + event.getValue());
             eventCount++;
             events.setText("" + eventCount);
         });
 
-        CheckboxGroup<String> helper = new CheckboxGroup<>("Options");
-        helper.setItems("Helper", "Invalid", "Valid", "Error", "Value", "Wide",
-                "Disabled", "Read only");
-        helper.setId("options");
-        helper.addValueChangeListener(event -> {
+        CheckboxGroup<String> options = new CheckboxGroup<>("Options");
+        options.setItems("Helper", "Invalid", "Error", "Value", "Wide",
+                "Disabled", "Read only", "Required");
+        options.setId("options");
+        options.addValueChangeListener(event -> {
             Set<String> selected = event.getValue();
             if (selected.contains("Helper")) {
                 colorPicker.setHelperText("Use this field to input a color.");
             }
             if (selected.contains("Invalid")) {
                 colorPicker.setInvalid(true);
-            }
-            if (selected.contains("Valid")) {
-                colorPicker.setHelperText(null);
-                colorPicker.setReadOnly(false);
-                colorPicker.setEnabled(true);
-                colorPicker.setValue(null);
-                colorPicker.setWidth(null);
-                colorPicker.setInvalid(false);
             }
             if (selected.contains("Error")) {
                 colorPicker.setErrorMessage("Error message.");
@@ -70,6 +62,23 @@ public class View extends VerticalLayout {
             if (selected.contains("Read only")) {
                 colorPicker.setReadOnly(true);
             }
+            if (selected.contains("Required")) {
+                colorPicker.setRequiredIndicatorVisible(true);
+            }
+        });
+
+        Button clear = new Button("Clear");
+        clear.setId("clear");
+        clear.addClickListener(event -> {
+            options.clear();
+            colorPicker.setHelperText(null);
+            colorPicker.setReadOnly(false);
+            colorPicker.setEnabled(true);
+            colorPicker.setValue(null);
+            colorPicker.setWidth(null);
+            colorPicker.setInvalid(false);
+            colorPicker.setRequiredIndicatorVisible(false);
+
         });
 
         CheckboxGroup<ColorPickerVariant> variants = new CheckboxGroup<>(
@@ -83,6 +92,6 @@ public class View extends VerticalLayout {
             colorPicker.focus();
         });
 
-        add(colorPicker, helper, variants, events);
+        add(colorPicker, options, variants, clear, events);
     }
 }

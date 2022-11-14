@@ -36,6 +36,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   readonly : boolean | undefined = undefined;
   @property({reflect: true})
   disabled : boolean | undefined = undefined;
+  @property({reflect: true})
+  required : boolean | undefined = undefined;
 
   @query("#combobox")
   _comboBox! : ComboBox;
@@ -241,6 +243,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           ?readonly=${this.readonly}
           disabled=${ifDefined(this.disabled)}
           invalid=${ifDefined(this.invalid)}
+          ?required=${this.required}
           theme="${ifDefined(this.theme)}">
 
           <div id="wrapper">
