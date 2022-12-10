@@ -23,6 +23,11 @@ tests for Vaadin add-on or custom component. This add-on features full test suit
 * TestBench based integration tests of the web-component part
 * Visual screen shot tests with TestBench verifying the styles
 
+Read more about creating robust add-ons with unit and integration tests in my blog
+post:
+
+https://vaadin.com/blog/custom-component-unit-and-integration-testing-tips
+
 ## Development instructions
 
 JavaScript modules can either be published as an NPM package or be kept as local 
