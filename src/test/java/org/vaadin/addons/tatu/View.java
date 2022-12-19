@@ -34,6 +34,7 @@ public class View extends VerticalLayout {
             eventCount++;
             events.setText("" + eventCount);
         });
+        colorPicker.setTooltipText("This is color picker");
 
         CheckboxGroup<String> options = new CheckboxGroup<>("Options");
         options.setItems("Helper", "Invalid", "Error", "Value", "Wide",

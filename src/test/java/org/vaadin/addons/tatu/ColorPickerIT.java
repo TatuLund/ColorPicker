@@ -6,8 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
@@ -112,7 +114,7 @@ public class ColorPickerIT extends AbstractViewTest {
         clear();
         Assert.assertEquals(null,
                 colorPicker.getFieldWrapper().getAttribute("required"));
-    }    
+    }
 
     @Test
     public void presetWorks() {
@@ -353,6 +355,23 @@ public class ColorPickerIT extends AbstractViewTest {
         field.setProperty("label", "Pick a color");
         Assert.assertEquals("Label update was not propagated", "Pick a color",
                 field.getLabel());
+    }
+
+    @Test
+    public void tooltipWorks() {
+        Actions action = new Actions(getDriver());
+        action.moveToElement(colorPicker).perform();
+        TestBenchElement tooltip = $("vaadin-tooltip-overlay").first();
+        Assert.assertEquals("Correct tooltip was not found",
+                "This is color picker", tooltip.getText());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void tooltipNotShownWhenOpen() {
+        colorPicker.openPopup();
+        Actions action = new Actions(getDriver());
+        action.moveToElement(colorPicker).perform();
+        $("vaadin-tooltip-overlay").first();
     }
 
     protected void waitForElementInvisible(final WebElement element) {

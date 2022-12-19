@@ -18,6 +18,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.shared.HasThemeVariant;
+import com.vaadin.flow.component.shared.HasTooltip;
 import com.vaadin.flow.data.binder.HasValidator;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
@@ -29,10 +30,11 @@ import com.vaadin.flow.data.binder.Validator;
 @Tag("color-picker")
 @Uses(ComboBox.class)
 @Uses(CustomField.class)
-public class ColorPicker extends
-        AbstractSinglePropertyField<ColorPicker, String> implements HasSize,
-        HasValidation, Focusable<ColorPicker>, HasHelper, HasLabel, HasTheme,
-        HasStyle, HasThemeVariant<ColorPickerVariant>, HasValidator<String> {
+public class ColorPicker
+        extends AbstractSinglePropertyField<ColorPicker, String>
+        implements HasSize, HasValidation, Focusable<ColorPicker>, HasHelper,
+        HasLabel, HasTheme, HasStyle, HasThemeVariant<ColorPickerVariant>,
+        HasValidator<String>, HasTooltip {
 
     /**
      * A preset color.

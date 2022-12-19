@@ -6,6 +6,7 @@ import '@vaadin/combo-box';
 import { comboBoxRenderer, ComboBoxLitRenderer } from '@vaadin/combo-box/lit.js';
 import { ComboBoxChangeEvent, ComboBoxCustomValueSetEvent, ComboBox } from '@vaadin/combo-box/vaadin-combo-box.js';
 import '@vaadin/custom-field';
+import { TooltipController } from '@vaadin/component-base/src/tooltip-controller.js';
 
 // Type that corresponds to ColorPreset type in ColorPicker.java
 interface Preset {
@@ -43,6 +44,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   _comboBox! : ComboBox;
   @query("#coloropicker")
   _colorPicker! : HTMLInputElement;
+
+  _tooltipController : TooltipController | undefined;
 
   // This is needed just for ThemableMixin
   static get is() {
@@ -122,6 +125,12 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	        flex-grow: 1;
         }
     `;
+  }
+
+  firstUpdated() {
+	this._tooltipController = new TooltipController(this, 'tooltip');
+    this.addController(this._tooltipController);
+	this._tooltipController.setShouldShow((target) => !this._comboBox.opened);
   }
 
   _isColor(strColor: string) : boolean {
@@ -273,6 +282,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             ${comboBoxRenderer(this.renderer, [])}
           ></vaadin-combo-box>
           </div>
+		<slot name="tooltip"></slot>
     `;
   }
 
