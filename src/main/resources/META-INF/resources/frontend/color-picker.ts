@@ -130,7 +130,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   firstUpdated() {
 	this._tooltipController = new TooltipController(this, 'tooltip');
     this.addController(this._tooltipController);
-	this._tooltipController.setShouldShow((target) => !this._comboBox.opened);
+	this._tooltipController.setShouldShow((target) => !(target as ColorPicker)._comboBox.opened);
   }
 
   _isColor(strColor: string) : boolean {
