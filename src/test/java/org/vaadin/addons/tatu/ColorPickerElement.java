@@ -6,6 +6,10 @@ import com.vaadin.testbench.HasHelper;
 import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.elementsbase.Element;
 
+/**
+ * This is helper class for the ColorPicker, which simplifies the actual test
+ * code and makes it more readable.
+ */
 @Element("color-picker")
 public class ColorPickerElement extends TestBenchElement implements HasHelper {
 

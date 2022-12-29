@@ -1,33 +1,20 @@
 package org.vaadin.addons.tatu;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-
 import java.util.Objects;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.vaadin.testbench.Parameters;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
-import com.vaadin.testbench.TestBench;
 import com.vaadin.testbench.TestBenchTestCase;
 
 /**
  * Base class for ITs
  * <p>
- * The tests use Chrome driver (see pom.xml for integration-tests profile) to
- * run integration tests on a headless Chrome. If a property {@code test.use
- * .hub} is set to true, {@code AbstractViewTest} will assume that the TestBench
- * test is running in a CI environment. In order to keep the this class light,
- * it makes certain assumptions about the CI environment (such as available
- * environment variables). It is not advisable to use this class as a base class
- * for you own TestBench tests.
+ * The tests use Chrome or Firefox driver (see pom.xml for integration-tests
+ * profile) to run integration tests on a headless browser.
  * <p>
  * To learn more about TestBench, visit <a href=
  * "https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin
@@ -36,16 +23,11 @@ import com.vaadin.testbench.TestBenchTestCase;
 public abstract class AbstractViewTest extends TestBenchTestCase {
     private static final int SERVER_PORT = 8080;
 
-    private final String route;
+    final String route;
 
     @Rule
     public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
             true);
-
-    @BeforeClass
-    public static void setupClass() {
-        WebDriverManager.chromedriver().setup();
-    }
 
     public AbstractViewTest() {
         this("");
@@ -55,30 +37,12 @@ public abstract class AbstractViewTest extends TestBenchTestCase {
         this.route = route;
     }
 
-    @Before
-    public void setup() throws Exception {
-        ChromeOptions options = new ChromeOptions();
-        options.setHeadless(true);
-        setDriver(TestBench.createDriver(new ChromeDriver(options)));
-        getDriver().get(getURL(route));
-
-        // We do screenshot testing, adjust settings to ensure less flakiness
-        Parameters.setScreenshotComparisonTolerance(0.05);
-        Parameters.setScreenshotComparisonCursorDetection(true);
-        testBench().resizeViewPortTo(800, 600);
-        Parameters.setMaxScreenshotRetries(3);
-        Parameters.setScreenshotRetryDelay(1000);
-
-        // Wait for frontend compilation complete before testing
-        waitForDevServer();
-    }
-
     /**
      * Returns deployment host name concatenated with route.
      *
      * @return URL to route
      */
-    private static String getURL(String route) {
+    protected static String getURL(String route) {
         return String.format("http://%s:%d/%s", getDeploymentHostname(),
                 SERVER_PORT, route);
     }

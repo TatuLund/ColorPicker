@@ -13,6 +13,7 @@ The component has design that fits Vaadin family of components, aka Lumo desing 
 * Text input accepts any css compatible color or preset color
 * Dropdown can be populated by color presets
 * Small, compact, etc. theme variants
+* Tooltip
 
 ## Unit and integration tests
 
@@ -27,6 +28,9 @@ Read more about creating robust add-ons with unit and integration tests in my bl
 post:
 
 https://vaadin.com/blog/custom-component-unit-and-integration-testing-tips
+
+Note: After writing the blog post the test kit has been refactored to run both on
+Chrome and Firefox. 
 
 ## Development instructions
 

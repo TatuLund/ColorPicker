@@ -3,7 +3,6 @@ package org.vaadin.addons.tatu;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.junit.BeforeClass;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
