@@ -167,7 +167,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 "1", events.getText());
     }
 
-    @Test(expected = ElementNotInteractableException.class)
     public void disabledinput() {
         initTest();
         options.selectByText("Disabled");
@@ -175,7 +174,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
         colorPicker.sendKeys("brown");
     }
 
-    @Test
     public void cssInputWorksByRGB() {
         initTest();
         colorPicker.focus();
@@ -197,7 +195,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 "1", events.getText());
     }
 
-    @Test
     public void cssInputWorksByHSL() {
         initTest();
         colorPicker.focus();
@@ -220,7 +217,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 "1", events.getText());
     }
 
-    @Test
     public void invalidCssInputIsDetected() {
         initTest();
         options.selectByText("Value");
@@ -243,7 +239,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 colorPicker.getPropertyString("invalid"));
     }
 
-    @Test
     public void helperTextWorks() {
         initTest();
         options.selectByText("Helper");
@@ -252,7 +247,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 "Use this field to input a color.", helperText);
     }
 
-    @Test
     public void invalidAndErrorWorks() {
         initTest();
         options.selectByText("Invalid");
@@ -266,7 +260,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 field.getPropertyBoolean("invalid"));
     }
 
-    @Test
     public void setValueFromServerWorks() {
         initTest();
         options.selectByText("Value");
@@ -282,7 +275,6 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 "#ffffff", colorPicker.getPicker().getPropertyString("value"));
     }
 
-    @Test
     public void setVariantsWorks() {
         initTest();
         variants.selectByText("COMPACT");
@@ -363,6 +355,15 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                                 + ".png")));
     }
 
+    public void colorPickerThemableMixinScreenshotTest() throws IOException {
+        initTest();
+        clear();
+        clear();
+        Assert.assertTrue(colorPicker
+                .compareScreen(ImageFileUtil.getReferenceScreenshotFile(
+                        "color-picker-border-" + browser + ".png")));
+    }
+
     public void colorPickerLabelWorks() {
         initTest();
         Assert.assertEquals("Initial label was not propagated", "Color",
@@ -387,6 +388,27 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
         Actions action = new Actions(getDriver());
         action.moveToElement(colorPicker).perform();
         $("vaadin-tooltip-overlay").first();
+    }
+
+    public void focusBlurEventWork() {
+        initTest();
+        clear();
+        clear();
+        colorPicker.getPicker().focus();
+        NotificationElement notification = $(NotificationElement.class).first();
+        Assert.assertEquals("Focus event not triggered on Picker", "Focused",
+                notification.getText());
+        colorPicker.getComboBox().focus();
+        notification = $(NotificationElement.class).get(1);
+        Assert.assertEquals("Blur event not triggered on Picker", "Blurred",
+                notification.getText());
+        notification = $(NotificationElement.class).get(2);
+        Assert.assertEquals("Blur event not triggered on ComboBox", "Focused",
+                notification.getText());
+        colorPicker.getComboBox().sendKeys(Keys.TAB);
+        notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Blur event not triggered on ComboBox", "Blurred",
+                notification.getText());
     }
 
     protected void waitForElementInvisible(final WebElement element) {

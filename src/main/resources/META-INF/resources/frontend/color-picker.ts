@@ -237,6 +237,26 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	}
   }
 
+  protected _handleFocus(e : CustomEvent) {
+	e.stopPropagation();
+	const event = new CustomEvent('focus', {
+        composed: true,
+        cancelable: true,
+        bubbles: true
+	});
+	this.dispatchEvent(event);		 
+  }
+
+  protected _handleBlur(e : CustomEvent) {
+	e.stopPropagation();
+	const event = new CustomEvent('blur', {
+        composed: true,
+        cancelable: true,
+        bubbles: true
+	});
+	this.dispatchEvent(event);		 
+  }
+
   render() {
 	// vaadin-custom-field is used as wrapper in order to have
 	// the common implementation of label, error message, helper
@@ -266,6 +286,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             type="color" 
             .value="${this.color}"
             @change=${this._handleChange}
+			@blur=${this._handleBlur}
+			@focus=${this._handleFocus}
           >
           <vaadin-combo-box
             part="dropdown"
@@ -280,6 +302,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             @change=${this._handlePreset}
             @custom-value-set=${this._cssColorInput}
             ${comboBoxRenderer(this.renderer, [])}
+			@blur=${this._handleBlur}
+			@focus=${this._handleFocus}
           ></vaadin-combo-box>
           </div>
 		<slot name="tooltip"></slot>

@@ -3,15 +3,46 @@ package org.vaadin.addons.tatu;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.vaadin.flow.testutil.TestPath;
+import com.vaadin.testbench.Parameters;
+import com.vaadin.testbench.TestBench;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public abstract class AbstractComponentIT
         extends AbstractViewTest {
     private static final int SERVER_PORT = 8080;
     private static final String USE_HUB_PROPERTY = "test.use.hub";
+
+    @BeforeClass
+    public static void setupClass() {
+        WebDriverManager.chromedriver().setup();
+    }
+
+    @Before
+    public void setup() throws Exception {
+        ChromeOptions options = new ChromeOptions();
+        options.setHeadless(true);
+        setDriver(TestBench.createDriver(new ChromeDriver(options)));
+        getDriver().get(getURL(route));
+
+        // We do screenshot testing, adjust settings to ensure less flakiness
+        Parameters.setScreenshotComparisonTolerance(0.05);
+        Parameters.setScreenshotComparisonCursorDetection(true);
+        testBench().resizeViewPortTo(800, 600);
+        Parameters.setMaxScreenshotRetries(3);
+        Parameters.setScreenshotRetryDelay(1000);
+
+        // Wait for frontend compilation complete before testing
+        waitForDevServer();
+    }
 
     protected void open() {
         open((String[]) null);

@@ -63,6 +63,8 @@ public class ColorPickerTest {
         AtomicInteger count = new AtomicInteger(0);
         colorPicker.addValueChangeListener(event -> {
             count.addAndGet(1);
+            Assert.assertEquals("Value is not #ffffff", "#ffffff",
+                    event.getValue());
         });
         colorPicker.setValue("#ffffff");
         Assert.assertEquals("Value change was not triggered", 1, count.get());

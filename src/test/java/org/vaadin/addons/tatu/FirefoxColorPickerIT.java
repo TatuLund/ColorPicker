@@ -130,6 +130,11 @@ public class FirefoxColorPickerIT extends FirefoxTest {
     }
 
     @Test
+    public void colorPickerThemableMixinScreenshotTest() throws IOException {
+        super.colorPickerThemableMixinScreenshotTest();
+    }
+
+    @Test
     public void colorPickerLabelWorks() {
         super.colorPickerLabelWorks();
     }
@@ -142,5 +147,10 @@ public class FirefoxColorPickerIT extends FirefoxTest {
     @Test(expected = NoSuchElementException.class)
     public void tooltipNotShownWhenOpen() {
         super.tooltipNotShownWhenOpen();
+    }
+
+    @Test
+    public void focusBlurEventWork() {
+        super.focusBlurEventWork();
     }
 }

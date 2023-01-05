@@ -10,13 +10,16 @@ import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.theme.Theme;
 
 @Route("")
-public class View extends VerticalLayout {
+@Theme("mytheme")
+public class View extends VerticalLayout implements AppShellConfigurator {
 
     private int eventCount = 0;
+    private boolean focuseEventsEnabled;
 
     public View() {
         setSizeFull();
@@ -72,15 +75,25 @@ public class View extends VerticalLayout {
         Button clear = new Button("Clear");
         clear.setId("clear");
         clear.addClickListener(event -> {
-            options.clear();
-            colorPicker.setHelperText(null);
-            colorPicker.setReadOnly(false);
-            colorPicker.setEnabled(true);
-            colorPicker.setValue(null);
-            colorPicker.setWidth(null);
-            colorPicker.setInvalid(false);
-            colorPicker.setRequiredIndicatorVisible(false);
-
+            if (clear.getText().equals("Clear") || focuseEventsEnabled) {
+                options.clear();
+                colorPicker.setHelperText(null);
+                colorPicker.setReadOnly(false);
+                colorPicker.setEnabled(true);
+                colorPicker.setValue(null);
+                colorPicker.setWidth(null);
+                colorPicker.setInvalid(false);
+                colorPicker.setRequiredIndicatorVisible(false);
+                if (!focuseEventsEnabled) {
+                    clear.setText("Focus/Blur");
+                }
+            } else {
+                focuseEventsEnabled = true;
+                colorPicker.addFocusListener(e -> Notification.show("Focused"));
+                colorPicker.addBlurListener(e -> Notification.show("Blurred"));
+                colorPicker.addThemeName("border");
+                clear.setText("Clear");
+            }
         });
 
         CheckboxGroup<ColorPickerVariant> variants = new CheckboxGroup<>(
@@ -93,8 +106,6 @@ public class View extends VerticalLayout {
                     .forEach(variant -> colorPicker.addThemeVariants(variant));
             colorPicker.focus();
         });
-
-        Span div = new Span("Text");
 
         add(colorPicker, options, variants, clear, events);
     }
