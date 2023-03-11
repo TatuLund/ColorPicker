@@ -39,6 +39,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   disabled : boolean | undefined = undefined;
   @property({reflect: true})
   required : boolean | undefined = undefined;
+  @property()
+  theme : string | null = null;
 
   @query("#combobox")
   _comboBox! : ComboBox;
