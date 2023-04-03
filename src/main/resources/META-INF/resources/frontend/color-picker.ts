@@ -259,6 +259,10 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	this.dispatchEvent(event);		 
   }
 
+  _set_theme(theme : string) {
+    this.theme = theme;
+  }
+
   render() {
 	// vaadin-custom-field is used as wrapper in order to have
 	// the common implementation of label, error message, helper
