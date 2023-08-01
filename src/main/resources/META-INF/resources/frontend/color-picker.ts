@@ -135,6 +135,12 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	this._tooltipController.setShouldShow((target) => !(target as ColorPicker)._comboBox.opened);
   }
 
+  updated() {
+	if (this.color) {
+      this.removeAttribute('invalid');
+    }
+  }
+
   _isColor(strColor: string) : boolean {
     const s = new Option().style;
     s.color = strColor;

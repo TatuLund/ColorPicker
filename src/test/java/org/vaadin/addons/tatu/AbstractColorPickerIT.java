@@ -232,10 +232,32 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 colorPicker.getPropertyString("color"));
         Assert.assertEquals("Field should be invalid", "",
                 colorPicker.getPropertyString("invalid"));
+        options.deselectByText("Value");
+        options.selectByText("Value");
+        notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Valid value was not detected", "#ffffff",
+                notification.getText());
+        Assert.assertEquals("Field should be valid", null,
+                colorPicker.getPropertyString("invalid"));
+        
+        colorPicker.focus();
+        colorPicker.sendKeys("weriuouwqero");
+        colorPicker.sendKeys(Keys.TAB);
+        notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Invalid value was not detected", "null",
+                notification.getText());
+        Assert.assertEquals("New value should be null", null,
+                colorPicker.getPropertyString("color"));
+        Assert.assertEquals("Field should be invalid", "",
+                colorPicker.getPropertyString("invalid"));
+
         colorPicker.focus();
         colorPicker.sendKeys("blue");
         colorPicker.sendKeys(Keys.TAB);
-        Assert.assertEquals("New value should be null", null,
+        notification = $(NotificationElement.class).last();
+        Assert.assertEquals("Valid value was not detected", "#0000ff",
+                notification.getText());
+        Assert.assertEquals("Field should be valid", null,
                 colorPicker.getPropertyString("invalid"));
     }
 
