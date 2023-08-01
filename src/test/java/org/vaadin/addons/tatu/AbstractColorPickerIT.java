@@ -377,6 +377,7 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
         initTest();
         Actions action = new Actions(getDriver());
         action.moveToElement(colorPicker).perform();
+        waitForElementPresent(By.tagName("vaadin-tooltip-overlay"));
         TestBenchElement tooltip = $("vaadin-tooltip-overlay").first();
         Assert.assertEquals("Correct tooltip was not found",
                 "This is color picker", tooltip.getText());
