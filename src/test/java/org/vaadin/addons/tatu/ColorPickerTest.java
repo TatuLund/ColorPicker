@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.vaadin.addons.tatu.ColorPicker.CaptionMode;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
 import org.vaadin.addons.tatu.ColorPicker.InputMode;
 
@@ -189,5 +190,13 @@ public class ColorPickerTest {
         Assert.assertTrue(colorPicker instanceof HasSize);
         Assert.assertTrue(colorPicker instanceof HasLabel);
         Assert.assertTrue(colorPicker instanceof HasValidation);
+    }
+
+    @Test
+    public void colorPresetSanitized() {
+        ColorPreset preset = new ColorPreset("#ffffff",
+                "<b><img src=1 onerror=alert(document.domain)>Color 3</b>",
+                CaptionMode.HTML);
+        Assert.assertEquals("<b><img>Color 3</b>", preset.getCaption());
     }
 }

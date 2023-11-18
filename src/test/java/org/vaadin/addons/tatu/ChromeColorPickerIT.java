@@ -53,6 +53,11 @@ public class ChromeColorPickerIT extends ChromeTest {
         super.cssInputWorksByName();
     }
 
+    @Test
+    public void noClearAndConvertToHex() {
+        super.noClearAndConvertToHex();
+    }
+    
     @Test(expected = ElementNotInteractableException.class)
     public void disabledinput() {
         super.disabledinput();

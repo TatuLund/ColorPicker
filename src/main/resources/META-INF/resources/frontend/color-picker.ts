@@ -12,6 +12,7 @@ import { TooltipController } from '@vaadin/component-base/src/tooltip-controller
 interface Preset {
 	color : string;
 	caption : string;
+	captionMode: string;
 }
 
 @customElement('color-picker')
@@ -28,6 +29,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   errorMessage = null;
   @property()
   nocssinput : boolean | undefined = undefined;
+  @property()
+  noclear : boolean | undefined = undefined;
 
   @property({reflect: true})
   invalid : boolean | undefined = undefined;
@@ -48,6 +51,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   _colorPicker! : HTMLInputElement;
 
   _tooltipController : TooltipController | undefined;
+  _updated = false;
 
   // This is needed just for ThemableMixin
   static get is() {
@@ -65,7 +69,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 		}
 		#colorpicker {
 			color: var(--lumo-secondary-text-color);
-			padding: 0 calc(0.375em + var(--lumo-border-radius) / 4 - 1px);
+			padding: 0 calc(0.375em + var(--lumo-border-radius-m) / 4 - 1px);
     		font-weight: 500;
     		line-height: 1;
 			font-size: var(--lumo-font-size-m);
@@ -201,6 +205,9 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	this.color = e.target.value;
 	console.log("Color: "+this.color);
 	this._emitColorChanged();
+	if (this._comboBox && this.noclear && this.color) {
+	   this._comboBox.value = this.color;
+	}
   }
 
   protected _handlePreset(e: ComboBoxChangeEvent<Preset>) {
@@ -209,10 +216,14 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	if (preset) {
 		this.color = preset.color;
 	    this._emitColorChanged();
-		// Clear text input for better usability
 	}
 	if (this._comboBox) {
-		this._comboBox.value='';
+		// Clear text input for better usability
+		if (this.noclear && this.color) {
+		  this._comboBox.value = this.color;	
+		} else {
+		  this._comboBox.value='';
+		}
 	}
   }
 
@@ -269,6 +280,23 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     this.theme = theme;
   }
 
+  protected _updateCaptions() {
+	if (this._updated) {
+	  return;
+	}
+	if (this._comboBox.opened) {
+      const captionElements = this._comboBox._scroller.getElementsByClassName('color-caption');
+	  for (let i=0;i<captionElements.length;i++) {
+        if (captionElements[i].captionMode === "HTML") {
+         captionElements[i].children[0].innerHTML = captionElements[i].caption;
+	    } else {
+         captionElements[i].children[0].textContent = captionElements[i].caption;		  
+	    }
+      }
+      this._updated = true;
+    }
+  }
+
   render() {
 	// vaadin-custom-field is used as wrapper in order to have
 	// the common implementation of label, error message, helper
@@ -288,7 +316,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           theme="${ifDefined(this.theme)}">
 
           <div id="wrapper">
-		  <input
+          <input
             id="colorpicker"
             part="colorpicker"
             ?readonly=${this.readonly}
@@ -312,6 +340,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
             .items="${this.presets}"
             item-label-path="caption"
             @change=${this._handlePreset}
+            @opened-changed=${this._updateCaptions}
             @custom-value-set=${this._cssColorInput}
             ${comboBoxRenderer(this.renderer, [])}
 			@blur=${this._handleBlur}
@@ -325,11 +354,15 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   private renderer: ComboBoxLitRenderer<Preset> = (preset) => {
     // Renders nicer looking color items with color badge and label in the dropdown
     return html`
-      <div style="display: flex;">
-        <div style="width: 20px; height: 20px; background: ${preset.color}; margin-right: 10px; border-radius: var(--lumo-border-radius-s);">          
+      <div part="color-preset" style="display: flex;">
+        <div
+          part="color-preset-color"
+          style="width: 20px; height: 20px; background: ${preset.color}; margin-right: 10px; border: solid 1px var(--lumo-contrast-10pct); border-radius: var(--lumo-border-radius-s);"
+        >          
         </div>
-        <div>
-          ${preset.caption}
+        <div class="color-caption" .captionMode=${preset.captionMode} .caption=${preset.caption}>
+          <div>
+          </div>
         </div>
       </div>
     `;

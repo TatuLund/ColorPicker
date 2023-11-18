@@ -14,6 +14,7 @@ The component has design that fits Vaadin family of components, aka Lumo desing 
 * Dropdown can be populated by color presets
 * Small, compact, etc. theme variants
 * Tooltip
+* Supports HTML captions for presets
 
 ## Unit and integration tests
 

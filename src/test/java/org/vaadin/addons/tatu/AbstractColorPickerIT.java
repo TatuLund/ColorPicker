@@ -3,9 +3,7 @@ package org.vaadin.addons.tatu;
 import java.io.IOException;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
@@ -167,6 +165,19 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 "1", events.getText());
     }
 
+    public void noClearAndConvertToHex() {
+        initTest();
+        colorPicker.setProperty("noclear", true);
+        colorPicker.sendKeys("blue");
+        colorPicker.sendKeys(Keys.TAB);
+        Assert.assertEquals("Input element should not be emptied", "#0000ff",
+                colorPicker.getComboBox().getInputElementValue());
+        colorPicker.focus();
+        colorPicker.selectPreset("Color 2");
+        Assert.assertEquals("Input element should not be emptied", "#ff0000",
+                colorPicker.getComboBox().getInputElementValue());
+    }
+
     public void disabledinput() {
         initTest();
         options.selectByText("Disabled");
@@ -239,7 +250,7 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
                 notification.getText());
         Assert.assertEquals("Field should be valid", null,
                 colorPicker.getPropertyString("invalid"));
-        
+
         colorPicker.focus();
         colorPicker.sendKeys("weriuouwqero");
         colorPicker.sendKeys(Keys.TAB);

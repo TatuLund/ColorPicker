@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
+
 import com.vaadin.flow.component.AbstractSinglePropertyField;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasHelper;
@@ -37,11 +41,26 @@ public class ColorPicker
         HasValidator<String>, HasTooltip {
 
     /**
+     * Caption mode.
+     */
+    public enum CaptionMode {
+        /**
+         * Use caption as plain text.
+         */
+        TEXT,
+        /**
+         * Use caption as HTML, will be sanitized.
+         */
+        HTML;
+    }
+
+    /**
      * A preset color.
      */
     public static class ColorPreset implements Serializable {
         private String color;
         private String caption;
+        private CaptionMode captionMode = CaptionMode.TEXT;
 
         /**
          * Constructor.
@@ -55,6 +74,24 @@ public class ColorPicker
         public ColorPreset(String color, String caption) {
             setColor(color);
             setCaption(caption);
+        }
+
+        /**
+         * Constructor with @see CaptionMode
+         * 
+         * @param color
+         *            Color value in six digits hex string, e.g. #ffffff, not
+         *            null.
+         * @param caption
+         *            Displayed name of the color, not null.
+         * @param captionMode
+         *            The CaptionMode, @see CaptionMode
+         */
+        public ColorPreset(String color, String caption,
+                CaptionMode captionMode) {
+            setColor(color);
+            setCaption(caption);
+            setCaptionMode(captionMode);
         }
 
         /**
@@ -105,7 +142,32 @@ public class ColorPicker
          */
         public void setCaption(String caption) {
             Objects.requireNonNull(caption, "caption can't be null");
+            if (getCaptionMode() == CaptionMode.HTML) {
+                caption = sanitize(caption);
+            }
             this.caption = caption;
+        }
+
+        /**
+         * Set the @see CaptionMode
+         * 
+         * @param captionMode
+         *            CaptionMode.
+         */
+        public void setCaptionMode(CaptionMode captionMode) {
+            this.captionMode = captionMode;
+            if (captionMode == CaptionMode.HTML) {
+                setCaption(getCaption());
+            }
+        }
+
+        /**
+         * Get the @see CaptionMode.
+         * 
+         * @return CaptionMode
+         */
+        public CaptionMode getCaptionMode() {
+            return captionMode;
         }
     }
 
@@ -188,6 +250,20 @@ public class ColorPicker
         }
     }
 
+    /**
+     * Set to true in order not to clear the input after color entry.
+     * 
+     * @param noclear
+     *            boolean value.
+     */
+    public void setNoClear(boolean noclear) {
+        if (noclear) {
+            getElement().setProperty("noclear", true);
+        } else {
+            getElement().removeProperty("noclear");
+        }
+    }
+
     @Override
     public Validator<String> getDefaultValidator() {
         return (value, context) -> checkValidity(value);
@@ -200,5 +276,13 @@ public class ColorPicker
         } else {
             return ValidationResult.error("Input is not a color");
         }
+    }
+
+    private static String sanitize(String html) {
+        Safelist safelist = Safelist.relaxed().addAttributes(":all", "style")
+                .addEnforcedAttribute("a", "rel", "nofollow");
+        String sanitized = Jsoup.clean(html, "", safelist,
+                new Document.OutputSettings().prettyPrint(false));
+        return sanitized;
     }
 }

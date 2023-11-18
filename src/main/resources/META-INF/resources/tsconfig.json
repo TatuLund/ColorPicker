@@ -1,12 +1,14 @@
 {
+  "flow_version": "23.3.4",
   "compilerOptions": {
     "sourceMap": true,
+    "jsx": "react-jsx",
     "inlineSources": true,
     "module": "esNext",
-    "target": "es2019",
+    "target": "es2020",
     "moduleResolution": "node",
     "strict": true,
-    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitAny": true,
@@ -14,17 +16,19 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "baseUrl": "frontend",
     "paths": {
-      "Frontend/*": [
-        "*"
-      ]
+      "@vaadin/flow-frontend": ["generated/jar-resources"],
+      "@vaadin/flow-frontend/*": ["generated/jar-resources/*"],
+      "Frontend/*": ["*"]
     }
   },
   "include": [
-    "frontend/**/*.ts",
-    "frontend/index.js",
+    "frontend/**/*",
     "types.d.ts"
   ],
-  "exclude": []
+  "exclude": [
+    "frontend/generated/jar-resources/**"
+  ]
 }

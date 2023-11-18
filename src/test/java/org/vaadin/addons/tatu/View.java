@@ -3,6 +3,7 @@ package org.vaadin.addons.tatu;
 import java.util.Arrays;
 import java.util.Set;
 
+import org.vaadin.addons.tatu.ColorPicker.CaptionMode;
 import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
 
 import com.vaadin.flow.component.button.Button;
@@ -29,9 +30,12 @@ public class View extends VerticalLayout implements AppShellConfigurator {
 
         ColorPicker colorPicker = new ColorPicker();
         colorPicker.setLabel("Color");
-        colorPicker
-                .setPresets(Arrays.asList(new ColorPreset("#00ff00", "Color 1"),
-                        new ColorPreset("#ff0000", "Color 2")));
+        colorPicker.setPresets(Arrays.asList(
+                new ColorPreset("#00ff00", "Color 1"),
+                new ColorPreset("#ff0000", "Color 2"),
+                new ColorPreset("#ffffff",
+                        "<b style='color: blue'><img src=1 onerror=alert(document.domain)>Color 3</b>",
+                        CaptionMode.HTML)));
 
         colorPicker.addValueChangeListener(event -> {
             Notification.show("" + event.getValue());
