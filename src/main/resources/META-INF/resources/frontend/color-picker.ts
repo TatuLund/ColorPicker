@@ -10,9 +10,10 @@ import { TooltipController } from '@vaadin/component-base/src/tooltip-controller
 
 // Type that corresponds to ColorPreset type in ColorPicker.java
 interface Preset {
-	color : string;
-	caption : string;
-	captionMode: string;
+  color : string;
+  caption : string;
+  textCaption : string;
+  captionMode: string;
 }
 
 @customElement('color-picker')
@@ -46,7 +47,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   theme : string | null = null;
 
   @query("#combobox")
-  _comboBox! : ComboBox;
+  _comboBox! : ComboBox<Preset>;
   @query("#coloropicker")
   _colorPicker! : HTMLInputElement;
 
@@ -62,33 +63,33 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	// Styles use lumo custom properties as parameters to fit
 	// look and feel of the other Vaadin components.
     return css`
-		.container {
-			display: flex;
-    		min-width: 100%;
-    		max-width: 100%;
-		}
-		#colorpicker {
-			color: var(--lumo-secondary-text-color);
-			padding: 0 calc(0.375em + var(--lumo-border-radius-m) / 4 - 1px);
-    		font-weight: 500;
-    		line-height: 1;
-			font-size: var(--lumo-font-size-m);
-            vertical-align: bottom;
-            margin-bottom: 4px;
-            margin-right: 4px;
-            height: var(--lumo-text-field-size);
-			border-radius: var(--lumo-border-radius-m);
-			border-width: 0px;
-    		background: var(--lumo-contrast-20pct);
-    		width: 50px;
-    		flex-shrink: 0;
-		}
-		#colorpicker:focus-visible {
-		    box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
-		    outline: unset;
+        .container {
+          display: flex;
+          min-width: 100%;
+          max-width: 100%;
+        }
+        #colorpicker {
+          color: var(--lumo-secondary-text-color);
+          padding: 0 calc(0.375em + var(--lumo-border-radius-m) / 4 - 1px);
+          font-weight: 500;
+          line-height: 1;
+          font-size: var(--lumo-font-size-m);
+          vertical-align: bottom;
+          margin-bottom: 4px;
+          margin-right: 4px;
+          height: var(--lumo-text-field-size);
+          border-radius: var(--lumo-border-radius-m);
+          border-width: 0px;
+          background: var(--lumo-contrast-20pct);
+          width: 50px;
+          flex-shrink: 0;
+        }
+        #colorpicker:focus-visible {
+		  box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
+		  outline: unset;
 		}
 		#colorpicker(not([disabled])):hover {
-    		background: var(--lumo-contrast-30pct);
+          background: var(--lumo-contrast-30pct);
 		}
 		@-moz-document url-prefix() { 
           #colorpicker {
@@ -97,38 +98,38 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           }
         }
 		:host([theme~="compact"]) #combobox {
-			display: none;
+          display: none;
 		}
         input#colorpicker[invalid] {
-            background: var(--lumo-error-color-10pct);
+          background: var(--lumo-error-color-10pct);
         }
         :host([invalid][disabled]) #colorpicker {
-            background: var(--lumo-error-color-10pct);
+          background: var(--lumo-error-color-10pct);
         }
         input#colorpicker[readonly][invalid] {
-            background: var(--lumo-error-color-50pct);
+          background: var(--lumo-error-color-50pct);
         }
         :host([disabled]) #colorpicker {
-            background: var(--lumo-contrast-10pct);
-            pointer-events: none;
+          background: var(--lumo-contrast-10pct);
+          pointer-events: none;
         }
         input#colorpicker[readonly] {
-            background: transparent; 
-            border: 1px dashed var(--lumo-contrast-30pct);
-            pointer-events: none;
+          background: transparent; 
+          border: 1px dashed var(--lumo-contrast-30pct);
+          pointer-events: none;
         }
         :host([disabled]) #colorpicker[readonly] {
-            background: var(--lumo-contrast-10pct); 
+          background: var(--lumo-contrast-10pct); 
         }
         :host([disabled]) #colorpicker[readonly][invalid] {
-            background: var(--lumo-error-color-50pct);
+          background: var(--lumo-error-color-50pct);
         }
         #wrapper {
-	        display: flex;
-	        align-items: end;
+	      display: flex;
+	      align-items: end;
         }
         #combobox {
-	        flex-grow: 1;
+	      flex-grow: 1;
         }
     `;
   }
@@ -289,8 +290,6 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	  for (let i=0;i<captionElements.length;i++) {
         if (captionElements[i].captionMode === "HTML") {
          captionElements[i].children[0].innerHTML = captionElements[i].caption;
-	    } else {
-         captionElements[i].children[0].textContent = captionElements[i].caption;		  
 	    }
       }
       this._updated = true;
@@ -302,9 +301,9 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	// the common implementation of label, error message, helper
 	// text and required indicator.
     return html`
-		<vaadin-custom-field 
-		  part="field"
-		  id="customfield" 
+        <vaadin-custom-field 
+          part="field"
+          id="customfield" 
           class="container"
           .label="${this.label}" 
           .helperText="${this.helperText}"
@@ -316,39 +315,54 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           theme="${ifDefined(this.theme)}">
 
           <div id="wrapper">
-          <input
-            id="colorpicker"
-            part="colorpicker"
-            ?readonly=${this.readonly}
-            disabled=${ifDefined(this.disabled)}
-            invalid=${ifDefined(this.invalid)}
-            theme="${ifDefined(this.theme)}"
-            type="color" 
-            .value="${this.color}"
-            @change=${this._handleChange}
-			@blur=${this._handleBlur}
-			@focus=${this._handleFocus}
-          >
-          <vaadin-combo-box
-            part="dropdown"
-	        id="combobox"
-            allow-custom-value
-            ?readonly=${this.readonly}
-            disabled=${ifDefined(this.disabled)}
-            invalid=${ifDefined(this.invalid)}
-            theme="${ifDefined(this.theme)}"
-            .items="${this.presets}"
-            item-label-path="caption"
-            @change=${this._handlePreset}
-            @opened-changed=${this._updateCaptions}
-            @custom-value-set=${this._cssColorInput}
-            ${comboBoxRenderer(this.renderer, [])}
-			@blur=${this._handleBlur}
-			@focus=${this._handleFocus}
-          ></vaadin-combo-box>
+            <input
+              id="colorpicker"
+              part="colorpicker"
+              ?readonly=${this.readonly}
+              disabled=${ifDefined(this.disabled)}
+              invalid=${ifDefined(this.invalid)}
+              theme="${ifDefined(this.theme)}"
+              type="color" 
+              .value="${this.color}"
+              @change=${this._handleChange}
+              @blur=${this._handleBlur}
+              @focus=${this._handleFocus}
+            >
+            <vaadin-combo-box
+              part="dropdown"
+	          id="combobox"
+              allow-custom-value
+              ?readonly=${this.readonly}
+              disabled=${ifDefined(this.disabled)}
+              invalid=${ifDefined(this.invalid)}
+              theme="${ifDefined(this.theme)}"
+              .items="${this._stripHtml(this.presets)}"
+              item-label-path="textCaption"
+              @change=${this._handlePreset}
+              @opened-changed=${this._updateCaptions}
+              @custom-value-set=${this._cssColorInput}
+              ${comboBoxRenderer(this.renderer, [])}
+              @blur=${this._handleBlur}
+              @focus=${this._handleFocus}
+            ></vaadin-combo-box>
           </div>
-		<slot name="tooltip"></slot>
+        <slot name="tooltip"></slot>
     `;
+  }
+
+  protected _stripHtml(presets : Preset[]) : Preset[] {
+    const stripped : Preset[] = [];
+    for (let i=0;i<presets.length;i++) {
+      if (presets[i].captionMode === 'HTML') {
+        var doc = new DOMParser().parseFromString(presets[i].caption, 'text/html');
+        const text = doc.body.textContent ? doc.body.textContent : '';
+        presets[i].textCaption = text;
+      } else {
+        presets[i].textCaption = presets[i].caption; 
+	  }
+      stripped.push(presets[i]);
+    }
+    return stripped;
   }
 
   private renderer: ComboBoxLitRenderer<Preset> = (preset) => {
@@ -362,6 +376,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
         </div>
         <div class="color-caption" .captionMode=${preset.captionMode} .caption=${preset.caption}>
           <div>
+            ${preset.textCaption}
           </div>
         </div>
       </div>
