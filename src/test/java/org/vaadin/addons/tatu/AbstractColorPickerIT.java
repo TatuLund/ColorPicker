@@ -168,10 +168,16 @@ public abstract class AbstractColorPickerIT extends AbstractViewTest {
     public void noClearAndConvertToHex() {
         initTest();
         colorPicker.setProperty("noclear", true);
+        options.selectByText("Value");
+        Assert.assertEquals("Input element should not be emptied", "#ffffff",
+                colorPicker.getComboBox().getInputElementValue());
+
+        colorPicker.clear();
         colorPicker.sendKeys("blue");
         colorPicker.sendKeys(Keys.TAB);
         Assert.assertEquals("Input element should not be emptied", "#0000ff",
                 colorPicker.getComboBox().getInputElementValue());
+
         colorPicker.focus();
         colorPicker.selectPreset("Color 2");
         Assert.assertEquals("Input element should not be emptied", "#ff0000",

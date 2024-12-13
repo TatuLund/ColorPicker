@@ -47,4 +47,7 @@ public class ColorPickerElement extends TestBenchElement implements HasHelper {
         getComboBox().openPopup();
     }
 
+    public void clear() {
+        executeScript("arguments[0].clear();", getComboBox());
+    }
 }

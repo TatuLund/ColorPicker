@@ -11,13 +11,10 @@ import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.Theme;
 
 @Route("")
-@Theme("mytheme")
-public class View extends VerticalLayout implements AppShellConfigurator {
+public class View extends VerticalLayout {
 
     private int eventCount = 0;
     private boolean focuseEventsEnabled;
@@ -74,6 +71,9 @@ public class View extends VerticalLayout implements AppShellConfigurator {
             if (selected.contains("Required")) {
                 colorPicker.setRequiredIndicatorVisible(true);
             }
+            if (selected.contains("No clear")) {
+                colorPicker.setNoClear(true);
+            }
         });
 
         Button clear = new Button("Clear");
@@ -87,6 +87,7 @@ public class View extends VerticalLayout implements AppShellConfigurator {
                 colorPicker.setValue(null);
                 colorPicker.setWidth(null);
                 colorPicker.setInvalid(false);
+                colorPicker.setNoClear(false);
                 colorPicker.setRequiredIndicatorVisible(false);
                 if (!focuseEventsEnabled) {
                     clear.setText("Focus/Blur");

@@ -60,8 +60,8 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   }
 
   static get styles() {
-	// Styles use lumo custom properties as parameters to fit
-	// look and feel of the other Vaadin components.
+    // Styles use lumo custom properties as parameters to fit
+    // look and feel of the other Vaadin components.
     return css`
         .container {
           display: flex;
@@ -85,21 +85,21 @@ export class ColorPicker extends ThemableMixin(LitElement) {
           flex-shrink: 0;
         }
         #colorpicker:focus-visible {
-		  box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
-		  outline: unset;
-		}
-		#colorpicker(not([disabled])):hover {
+          box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
+          outline: unset;
+        }
+        #colorpicker(not([disabled])):hover {
           background: var(--lumo-contrast-30pct);
-		}
-		@-moz-document url-prefix() { 
+        }
+        @-moz-document url-prefix() { 
           #colorpicker {
             padding-top: 4px;
             padding-bottom: 4px;
           }
         }
-		:host([theme~="compact"]) #combobox {
+        :host([theme~="compact"]) #combobox {
           display: none;
-		}
+        }
         input#colorpicker[invalid] {
           background: var(--lumo-error-color-10pct);
         }
@@ -129,19 +129,19 @@ export class ColorPicker extends ThemableMixin(LitElement) {
 	      align-items: end;
         }
         #combobox {
-	      flex-grow: 1;
+          flex-grow: 1;
         }
     `;
   }
 
   firstUpdated() {
-	this._tooltipController = new TooltipController(this, 'tooltip');
+    this._tooltipController = new TooltipController(this, 'tooltip');
     this.addController(this._tooltipController);
-	this._tooltipController.setShouldShow((target) => !(target as ColorPicker)._comboBox.opened);
+    this._tooltipController.setShouldShow((target) => !(target as ColorPicker)._comboBox.opened);
   }
 
   updated() {
-	if (this.color) {
+    if (this.color) {
       this.removeAttribute('invalid');
     }
   }
@@ -153,11 +153,11 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   }
 
   focus() {
-	// Override focus to combobox when available
+    // Override focus to combobox when available
     if (!this.compact) {
-       this._comboBox?.focus();
+      this._comboBox?.focus();
     } else {
-       this._colorPicker?.focus();
+      this._colorPicker?.focus();
     }
   }
 
@@ -282,24 +282,24 @@ export class ColorPicker extends ThemableMixin(LitElement) {
   }
 
   protected _updateCaptions() {
-	if (this._updated) {
-	  return;
-	}
+    if (this._updated) {
+      return;
+    }
 	if (this._comboBox.opened) {
       const captionElements = this._comboBox._scroller.getElementsByClassName('color-caption');
-	  for (let i=0;i<captionElements.length;i++) {
+      for (let i=0;i<captionElements.length;i++) {
         if (captionElements[i].captionMode === "HTML") {
-         captionElements[i].children[0].innerHTML = captionElements[i].caption;
-	    }
+          captionElements[i].children[0].innerHTML = captionElements[i].caption;
+        }
       }
       this._updated = true;
     }
   }
 
   render() {
-	// vaadin-custom-field is used as wrapper in order to have
-	// the common implementation of label, error message, helper
-	// text and required indicator.
+    // vaadin-custom-field is used as wrapper in order to have
+    // the common implementation of label, error message, helper
+    // text and required indicator.
     return html`
         <vaadin-custom-field 
           part="field"
@@ -337,6 +337,7 @@ export class ColorPicker extends ThemableMixin(LitElement) {
               invalid=${ifDefined(this.invalid)}
               theme="${ifDefined(this.theme)}"
               .items="${this._stripHtml(this.presets)}"
+              .value="${this.noclear ? this.color : ''}"
               item-label-path="textCaption"
               @change=${this._handlePreset}
               @opened-changed=${this._updateCaptions}
