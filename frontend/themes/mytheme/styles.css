@@ -1,0 +1,5 @@
+vaadin-text-field > label {
+  overflow-wrap: break-word;
+  white-space: break-spaces;
+}
+
