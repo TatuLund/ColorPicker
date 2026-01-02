@@ -1,9 +1,12 @@
 package org.vaadin.addons.tatu;
 
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.aura.Aura;
+import com.vaadin.flow.theme.lumo.Lumo;
 
-@Theme("mytheme")
+@StyleSheet(Lumo.STYLESHEET)
 public class Config implements AppShellConfigurator {
 
 }

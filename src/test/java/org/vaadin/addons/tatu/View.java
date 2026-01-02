@@ -8,12 +8,14 @@ import org.vaadin.addons.tatu.ColorPicker.ColorPreset;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
 @Route("")
+@CssImport(value = "./color-picker.css", themeFor = "color-picker")
 public class View extends VerticalLayout {
 
     private int eventCount = 0;

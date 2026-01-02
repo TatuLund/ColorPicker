@@ -57,65 +57,64 @@ public class ColorPickerIT extends AbstractViewTest {
                 colorPicker.$(TestBenchElement.class).all().size() > 0);
         TestBenchElement picker = colorPicker.getPicker();
         Assert.assertEquals("Input is not a color picker", "color",
-                picker.getAttribute("type"));
+                picker.getDomAttribute("type"));
     }
 
     @Test
     public void themeAttributeGetsPropagated() {
         colorPicker.setProperty("theme", "theme");
         Assert.assertEquals("theme",
-                colorPicker.getComboBox().getAttribute("theme"));
+                colorPicker.getComboBox().getDomAttribute("theme"));
         Assert.assertEquals("theme",
-                colorPicker.getPicker().getAttribute("theme"));
+                colorPicker.getPicker().getDomAttribute("theme"));
         Assert.assertEquals("theme",
-                colorPicker.getFieldWrapper().getAttribute("theme"));
+                colorPicker.getFieldWrapper().getDomAttribute("theme"));
     }
 
     @Test
     public void disabledAttributeGetsPropagated() {
         options.selectByText("Disabled");
         Assert.assertEquals("true",
-                colorPicker.getComboBox().getAttribute("disabled"));
+                colorPicker.getComboBox().getDomAttribute("disabled"));
         Assert.assertEquals("true",
-                colorPicker.getPicker().getAttribute("disabled"));
+                colorPicker.getPicker().getDomAttribute("disabled"));
         Assert.assertEquals("true",
-                colorPicker.getFieldWrapper().getAttribute("disabled"));
+                colorPicker.getFieldWrapper().getDomAttribute("disabled"));
         options.deselectByText("Disabled");
         clear();
-        Assert.assertEquals(null,
-                colorPicker.getComboBox().getAttribute("disabled"));
-        Assert.assertEquals(null,
-                colorPicker.getPicker().getAttribute("disabled"));
-        Assert.assertEquals(null,
-                colorPicker.getFieldWrapper().getAttribute("disabled"));
+        Assert.assertTrue(colorPicker.getComboBox().getPropertyBoolean("disabled"));
+        Assert.assertTrue(
+                colorPicker.getPicker().getPropertyBoolean("disabled"));
+        Assert.assertEquals("true",
+                colorPicker.getFieldWrapper().getDomAttribute("disabled"));
     }
 
     @Test
     public void invalidAttributeGetsPropagated() {
         options.selectByText("Invalid");
         Assert.assertEquals("true",
-                colorPicker.getComboBox().getAttribute("invalid"));
+                colorPicker.getComboBox().getDomAttribute("invalid"));
         Assert.assertEquals("true",
-                colorPicker.getPicker().getAttribute("invalid"));
+                colorPicker.getPicker().getDomAttribute("invalid"));
         Assert.assertEquals("true",
-                colorPicker.getFieldWrapper().getAttribute("invalid"));
+                colorPicker.getFieldWrapper().getDomAttribute("invalid"));
         clear();
-        Assert.assertEquals("false",
-                colorPicker.getComboBox().getAttribute("invalid"));
-        Assert.assertEquals(null,
-                colorPicker.getPicker().getAttribute("invalid"));
-        Assert.assertEquals("false",
-                colorPicker.getFieldWrapper().getAttribute("invalid"));
+        Assert.assertNull(
+                colorPicker.getComboBox().getDomAttribute("invalid"));
+        Assert.assertNull(
+                colorPicker.getPicker().getDomAttribute("invalid"));
+        Assert.assertNull(
+                colorPicker.getFieldWrapper().getDomAttribute("invalid"));
     }
 
     @Test
     public void requiredAttributeGetsPropagated() {
         options.selectByText("Required");
         Assert.assertEquals("true",
-                colorPicker.getFieldWrapper().getAttribute("required"));
+                colorPicker.getFieldWrapper().getDomAttribute("required"));
         clear();
         Assert.assertEquals(null,
-                colorPicker.getFieldWrapper().getAttribute("required"));
+                colorPicker.getFieldWrapper().getDomAttribute("required"));
     }
 
     @Test
@@ -253,15 +252,15 @@ public class ColorPickerIT extends AbstractViewTest {
                 notification.getText());
         Assert.assertEquals("New value should be null", null,
                 colorPicker.getPropertyString("color"));
-        Assert.assertEquals("Field should be invalid", "",
-                colorPicker.getPropertyString("invalid"));
+        Assert.assertTrue("Field should be invalid",
+                colorPicker.getPropertyBoolean("invalid"));
         options.deselectByText("Value");
         options.selectByText("Value");
         notification = $(NotificationElement.class).last();
         Assert.assertEquals("Valid value was not detected", "#ffffff",
                 notification.getText());
-        Assert.assertEquals("Field should be valid", null,
-                colorPicker.getPropertyString("invalid"));
+        Assert.assertFalse("Field should be valid",
+                colorPicker.getPropertyBoolean("invalid"));
 
         colorPicker.focus();
         colorPicker.sendKeys("weriuouwqero");
@@ -271,8 +270,8 @@ public class ColorPickerIT extends AbstractViewTest {
                 notification.getText());
         Assert.assertEquals("New value should be null", null,
                 colorPicker.getPropertyString("color"));
-        Assert.assertEquals("Field should be invalid", "",
-                colorPicker.getPropertyString("invalid"));
+        Assert.assertTrue("Field should be invalid",
+                colorPicker.getPropertyBoolean("invalid"));
 
         colorPicker.focus();
         colorPicker.sendKeys("blue");
@@ -280,8 +279,8 @@ public class ColorPickerIT extends AbstractViewTest {
         notification = $(NotificationElement.class).last();
         Assert.assertEquals("Valid value was not detected", "#0000ff",
                 notification.getText());
-        Assert.assertEquals("Field should be valid", null,
-                colorPicker.getPropertyString("invalid"));
+        Assert.assertFalse("Field should be valid",
+                colorPicker.getPropertyBoolean("invalid"));
     }
 
     @Test
@@ -323,7 +322,7 @@ public class ColorPickerIT extends AbstractViewTest {
     @Test
     public void setVariantsWorks() {
         variants.selectByText("COMPACT");
-        Assert.assertEquals("compact", colorPicker.getAttribute("theme"));
+        Assert.assertEquals("compact", colorPicker.getDomAttribute("theme"));
         ComboBoxElement combo = colorPicker.getComboBox();
         waitForElementInvisible(combo);
     }
@@ -422,8 +421,9 @@ public class ColorPickerIT extends AbstractViewTest {
     public void tooltipWorks() {
         Actions action = new Actions(getDriver());
         action.moveToElement(colorPicker).perform();
-        waitForElementPresent(By.tagName("vaadin-tooltip-overlay"));
-        TestBenchElement tooltip = $("vaadin-tooltip-overlay").first();
+        TestBenchElement tooltip = colorPicker.$("vaadin-tooltip").first();
+        waitUntil(driver -> tooltip.getDomAttribute("opened") != null);
+        Assert.assertNotNull(tooltip.getDomAttribute("opened"));
         Assert.assertEquals("Correct tooltip was not found",
                 "This is color picker", tooltip.getText());
     }

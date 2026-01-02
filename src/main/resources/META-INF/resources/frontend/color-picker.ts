@@ -1,155 +1,221 @@
-import { css, html, LitElement } from 'lit';
-import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
-import { customElement, property, query } from 'lit/decorators.js';
+import { css, html, LitElement } from "lit";
+import { ThemableMixin } from "@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js";
+import { ThemeDetectionMixin } from "@vaadin/vaadin-themable-mixin/vaadin-theme-detection-mixin.js";
+import { customElement, property, query } from "lit/decorators.js";
 import { ifDefined } from "lit-html/directives/if-defined.js";
-import '@vaadin/combo-box';
-import { comboBoxRenderer, ComboBoxLitRenderer } from '@vaadin/combo-box/lit.js';
-import { ComboBoxChangeEvent, ComboBoxCustomValueSetEvent, ComboBox } from '@vaadin/combo-box/vaadin-combo-box.js';
-import '@vaadin/custom-field';
-import { TooltipController } from '@vaadin/component-base/src/tooltip-controller.js';
+import "@vaadin/combo-box";
+import {
+  comboBoxRenderer,
+  ComboBoxLitRenderer,
+} from "@vaadin/combo-box/lit.js";
+import {
+  ComboBoxChangeEvent,
+  ComboBoxCustomValueSetEvent,
+  ComboBox,
+} from "@vaadin/combo-box/vaadin-combo-box.js";
+import "@vaadin/custom-field";
+import { TooltipController } from "@vaadin/component-base/src/tooltip-controller.js";
 
 // Type that corresponds to ColorPreset type in ColorPicker.java
 interface Preset {
-  color : string;
-  caption : string;
-  textCaption : string;
+  color: string;
+  caption: string;
+  textCaption: string;
   captionMode: string;
 }
 
-@customElement('color-picker')
-export class ColorPicker extends ThemableMixin(LitElement) {
+@customElement("color-picker")
+export class ColorPicker extends ThemeDetectionMixin(
+  ThemableMixin(LitElement)
+) {
   @property()
-  label = '';
+  label = "";
   @property()
-  color : string | null = '';
-  @property()
-  presets : Preset[] = [];
+  color: string | null = "";
+  @property({ type: Array })
+  presets: Preset[] = [];
   @property()
   helperText = null;
   @property()
   errorMessage = null;
-  @property()
-  nocssinput : boolean | undefined = undefined;
-  @property()
-  noclear : boolean | undefined = undefined;
+  @property({ type: Boolean })
+  nocssinput: boolean | undefined = undefined;
+  @property({ type: Boolean })
+  noclear: boolean | undefined = undefined;
 
-  @property({reflect: true})
-  invalid : boolean | undefined = undefined;
-  @property({reflect: true})
-  compact : boolean | undefined = undefined;
-  @property({reflect: true})
-  readonly : boolean | undefined = undefined;
-  @property({reflect: true})
-  disabled : boolean | undefined = undefined;
-  @property({reflect: true})
-  required : boolean | undefined = undefined;
+  @property({ type: Boolean, reflect: true })
+  invalid: boolean | undefined = undefined;
+  @property({ type: Boolean, reflect: true })
+  compact: boolean | undefined = undefined;
+  @property({ type: Boolean, reflect: true })
+  readonly: boolean | undefined = undefined;
+  @property({ type: Boolean, reflect: true })
+  disabled: boolean | undefined = undefined;
+  @property({ type: Boolean, reflect: true })
+  required: boolean | undefined = undefined;
   @property()
-  theme : string | null = null;
+  theme: string | null = null;
 
   @query("#combobox")
-  _comboBox! : ComboBox<Preset>;
+  _comboBox!: ComboBox<Preset>;
   @query("#coloropicker")
-  _colorPicker! : HTMLInputElement;
+  _colorPicker!: HTMLInputElement;
 
-  _tooltipController : TooltipController | undefined;
+  _tooltipController: TooltipController | undefined;
   _updated = false;
 
   // This is needed just for ThemableMixin
   static get is() {
-    return 'color-picker';
+    return "color-picker";
   }
 
   static get styles() {
     // Styles use lumo custom properties as parameters to fit
     // look and feel of the other Vaadin components.
     return css`
-        .container {
-          display: flex;
-          min-width: 100%;
-          max-width: 100%;
-        }
+      :host {
+        --color-picker-text-color: var(--vaadin-text-color);
+        --color-picker-border-radius: var(--vaadin-radius-m);
+        --color-picker-font-size: var(--vaadin-font-size-m);
+        --color-picker-height: 100%;
+        --color-picker-background-color: var(--vaadin-input-field-background);
+        --color-picker-focus-ring-color: var(--vaadin-focus-ring-color);
+        --color-picker-hover-background-color: var(--vaadin-input-field-background);
+        --color-picker-invalid-background-color: var(--lumo-error-color-10pct);
+        --color-picker-disabled-background-color: var(--vaadin-background-container-strong);
+        --color-picker-readonly-border-color: var(--lumo-contrast-30pct);
+      }
+      :host([data-application-theme="lumo"]) {
+        --color-picker-text-color: var(--lumo-secondary-text-color);
+        --color-picker-border-radius: var(--lumo-border-radius-m);
+        --color-picker-font-size: var(--lumo-font-size-m);
+        --color-picker-height: var(--lumo-size-m);
+        --color-picker-background-color: var(--lumo-contrast-20pct);
+        --color-picker-focus-ring-color: var(--lumo-primary-color-50pct);
+        --color-picker-hover-background-color: var(--lumo-contrast-30pct);
+        --color-picker-invalid-background-color: var(--lumo-error-color-10pct);
+        --color-picker-disabled-background-color: var(--lumo-contrast-10pct);
+        --color-picker-readonly-border-color: var(--lumo-contrast-30pct);
+      }
+      :host([data-application-theme="aura"]) {
+        --color-picker-font-size: var(--aura-font-size-m);
+        --color-picker-disabled-background-color: var(--aura-shadow-color);
+      }
+      :host([data-application-theme="lumo"]) .container {
+        display: flex;
+      }
+      .container {
+        min-width: 100%;
+        max-width: 100%;
+      }
+      :host([data-application-theme="aura"]) #colorpicker {
+        border-width: 1px;
+        border-style: solid;
+        border-color: var(--vaadin-border-color);
+      }
+      :host([data-application-theme="aura"][invalid]) #colorpicker {
+        border-color: var(--vaadin-input-field-error-color);
+      }
+      :host([data-application-theme="aura"][readonly]) #colorpicker {
+        border-style: dashed;
+      }
+      :host([data-application-theme="aura"][disabled]) #colorpicker {
+        border-width: 0px;
+      }
+      :host([data-application-theme="lumo"]) #colorpicker {
+        margin-bottom: 4px;
+      }
+      #colorpicker {
+        color: var(--color-picker-text-color);
+        padding: 0 calc(0.375em + var(--color-picker-border-radius) / 4 - 1px);
+        font-weight: 500;
+        line-height: 1;
+        font-size: var(--color-picker-font-size);
+        vertical-align: bottom;
+        margin-bottom: 0px;
+        margin-right: 4px;
+        height: var(--color-picker-height);
+        border-radius: var(--color-picker-border-radius);
+        border-width: 0px;
+        background: var(--color-picker-background-color);
+        width: 50px;
+        flex-shrink: 0;
+      }
+      :host([data-application-theme="lumo"]) #colorpicker:focus-visible {
+        box-shadow: 0 0 0 2px var(--color-picker-focus-ring-color);
+        outline: unset;
+      }
+      :host([data-application-theme="aura"]) #colorpicker:focus-visible {
+        outline: 2px solid var(--color-picker-focus-ring-color);
+      }
+      :host([data-application-theme="aura"][readonly]) #colorpicker:focus-visible {
+        outline: 2px dashed var(--color-picker-focus-ring-color);
+      }
+      #colorpicker:not([disabled]):hover {
+        background: var(--color-picker-hover-background-color);
+      }
+      @-moz-document url-prefix() {
         #colorpicker {
-          color: var(--lumo-secondary-text-color);
-          padding: 0 calc(0.375em + var(--lumo-border-radius-m) / 4 - 1px);
-          font-weight: 500;
-          line-height: 1;
-          font-size: var(--lumo-font-size-m);
-          vertical-align: bottom;
-          margin-bottom: 4px;
-          margin-right: 4px;
-          height: var(--lumo-text-field-size);
-          border-radius: var(--lumo-border-radius-m);
-          border-width: 0px;
-          background: var(--lumo-contrast-20pct);
-          width: 50px;
-          flex-shrink: 0;
+          padding-top: 4px;
+          padding-bottom: 4px;
         }
-        #colorpicker:focus-visible {
-          box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
-          outline: unset;
-        }
-        #colorpicker(not([disabled])):hover {
-          background: var(--lumo-contrast-30pct);
-        }
-        @-moz-document url-prefix() { 
-          #colorpicker {
-            padding-top: 4px;
-            padding-bottom: 4px;
-          }
-        }
-        :host([theme~="compact"]) #combobox {
-          display: none;
-        }
-        input#colorpicker[invalid] {
-          background: var(--lumo-error-color-10pct);
-        }
-        :host([invalid][disabled]) #colorpicker {
-          background: var(--lumo-error-color-10pct);
-        }
-        input#colorpicker[readonly][invalid] {
-          background: var(--lumo-error-color-50pct);
-        }
-        :host([disabled]) #colorpicker {
-          background: var(--lumo-contrast-10pct);
-          pointer-events: none;
-        }
-        input#colorpicker[readonly] {
-          background: transparent; 
-          border: 1px dashed var(--lumo-contrast-30pct);
-          pointer-events: none;
-        }
-        :host([disabled]) #colorpicker[readonly] {
-          background: var(--lumo-contrast-10pct); 
-        }
-        :host([disabled]) #colorpicker[readonly][invalid] {
-          background: var(--lumo-error-color-50pct);
-        }
-        #wrapper {
-	      display: flex;
-	      align-items: end;
-        }
-        #combobox {
-          flex-grow: 1;
-        }
+      }
+      :host([theme~="compact"]) #combobox {
+        display: none;
+      }
+      :host([data-application-theme="lumo"]) input#colorpicker[invalid] {
+        background: var(--color-picker-invalid-background-color);
+      }
+      :host([data-application-theme="lumo"][invalid][disabled]) #colorpicker {
+        background: var(--color-picker-invalid-background-color);
+      }
+      input#colorpicker[readonly][invalid] {
+        background: var(--color-picker-invalid-background-color);
+      }
+      :host([disabled]) #colorpicker {
+        background: var(--color-picker-disabled-background-color);
+        cursor: var(--vaadin-disabled-cursor);
+      }
+      input#colorpicker[readonly] {
+        background: transparent;
+        border: 1px dashed var(--color-picker-readonly-border-color);
+        pointer-events: none;
+      }
+      :host([disabled]) #colorpicker[readonly] {
+        background: var(--color-picker-disabled-background-color);
+      }
+      :host([disabled]) #colorpicker[readonly][invalid] {
+        background: var(--color-picker-invalid-background-color);
+      }
+      #wrapper {
+        display: flex;
+        align-items: end;
+        height: 100%;
+      }
+      #combobox {
+        flex-grow: 1;
+      }
     `;
   }
 
   firstUpdated() {
-    this._tooltipController = new TooltipController(this, 'tooltip');
+    this._tooltipController = new TooltipController(this, "tooltip");
     this.addController(this._tooltipController);
-    this._tooltipController.setShouldShow((target) => !(target as ColorPicker)._comboBox.opened);
+    this._tooltipController.setShouldShow(
+      (target) => !(target as ColorPicker)._comboBox.opened
+    );
   }
 
   updated() {
     if (this.color) {
-      this.removeAttribute('invalid');
+      this.removeAttribute("invalid");
     }
   }
 
-  _isColor(strColor: string) : boolean {
+  _isColor(strColor: string): boolean {
     const s = new Option().style;
     s.color = strColor;
-    return s.color !== '';
+    return s.color !== "";
   }
 
   focus() {
@@ -161,123 +227,125 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     }
   }
 
-  protected _colorToRGBA(color : string) : Uint8ClampedArray {
+  protected _colorToRGBA(color: string): Uint8ClampedArray {
     // Returns the color as an array of [r, g, b, a] -- all range from 0 - 255
     // color must be a valid canvas fillStyle. This will cover most anything
     // you'd want to use.
     // Examples:
     // colorToRGBA('red')  # [255, 0, 0, 255]
     // colorToRGBA('#f00') # [255, 0, 0, 255]
-    const cvs = document.createElement('canvas');
+    const cvs = document.createElement("canvas");
     cvs.height = 1;
     cvs.width = 1;
-    const ctx = cvs.getContext('2d');
+    const ctx = cvs.getContext("2d");
     if (ctx) {
-       ctx.fillStyle = color;
-       ctx.fillRect(0, 0, 1, 1);
-       return ctx.getImageData(0, 0, 1, 1).data;
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, 1, 1);
+      return ctx.getImageData(0, 0, 1, 1).data;
     } else {
-	   var empty : Uint8ClampedArray;
-       empty = new Uint8ClampedArray();
-	   return empty;
+      var empty: Uint8ClampedArray;
+      empty = new Uint8ClampedArray();
+      return empty;
     }
   }
 
-  protected _byteToHex(num : number) : string {
+  protected _byteToHex(num: number): string {
     // Turns a number (0-255) into a 2-character hex number (00-ff)
-    return ('0'+num.toString(16)).slice(-2);
+    return ("0" + num.toString(16)).slice(-2);
   }
 
-  protected _colorToHex(color : string) : string {
+  protected _colorToHex(color: string): string {
     // Convert any CSS color to a hex representation
     // Examples:
     // colorToHex('red')            # '#ff0000'
     // colorToHex('rgb(255, 0, 0)') # '#ff0000'
     var hex;
     const rgba = this._colorToRGBA(color);
-    hex = [0,1,2].map(
-        idx => { return this._byteToHex(rgba[idx]); }
-        ).join('');
-    return "#"+hex;
+    hex = [0, 1, 2]
+      .map((idx) => {
+        return this._byteToHex(rgba[idx]);
+      })
+      .join("");
+    return "#" + hex;
   }
 
   protected _handleChange(e: any) {
-	// Color was picked from native input
-	this.color = e.target.value;
-	console.log("Color: "+this.color);
-	this._emitColorChanged();
-	if (this._comboBox && this.noclear && this.color) {
-	   this._comboBox.value = this.color;
-	}
+    // Color was picked from native input
+    this.color = e.target.value;
+    console.log("Color: " + this.color);
+    this._emitColorChanged();
+    if (this._comboBox && this.noclear && this.color) {
+      this._comboBox.value = this.color;
+    }
   }
 
   protected _handlePreset(e: ComboBoxChangeEvent<Preset>) {
-	// Color was selected using preset
-	const preset = e.target.selectedItem;
-	if (preset) {
-		this.color = preset.color;
-	    this._emitColorChanged();
-	}
-	if (this._comboBox) {
-		// Clear text input for better usability
-		if (this.noclear && this.color) {
-		  this._comboBox.value = this.color;	
-		} else {
-		  this._comboBox.value='';
-		}
-	}
+    // Color was selected using preset
+    const preset = e.target.selectedItem;
+    if (preset) {
+      this.color = preset.color;
+      this._emitColorChanged();
+    }
+    if (this._comboBox) {
+      // Clear text input for better usability
+      if (this.noclear && this.color) {
+        this._comboBox.value = this.color;
+      } else {
+        this._comboBox.value = "";
+      }
+    }
   }
 
   protected _emitColorChanged() {
-	if (this.color) {
-    	this.removeAttribute('invalid');
-	}
-	const event = new CustomEvent('color-changed', {
-		detail: this.color,
-        composed: true,
-        cancelable: true,
-        bubbles: true		
-	});
-	this.dispatchEvent(event);	
+    if (this.color) {
+      this.removeAttribute("invalid");
+    }
+    const event = new CustomEvent("color-changed", {
+      detail: this.color,
+      composed: true,
+      cancelable: true,
+      bubbles: true,
+    });
+    this.dispatchEvent(event);
   }
 
   protected _cssColorInput(e: ComboBoxCustomValueSetEvent) {
-	// This function is called when custom value is input
-	// Conversion to hex is needed as native input does not allow
-	// other formats.
-	if (this.nocssinput) return;
-	const cssColor = e.detail;
-	if (this._isColor(cssColor)) {
-		this.color = this._colorToHex(cssColor);
-    	this._emitColorChanged();
-	} else {
-        this.setAttribute('invalid','');
-		this.color = null;
-    	this._emitColorChanged();
-	}
+    // This function is called when custom value is input
+    // Conversion to hex is needed as native input does not allow
+    // other formats.
+    if (this.nocssinput) return;
+    const cssColor = e.detail;
+    if (this._isColor(cssColor)) {
+      this.color = this._colorToHex(cssColor);
+      this._emitColorChanged();
+    } else {
+      this.setAttribute("invalid", "");
+      this.color = null;
+      this._emitColorChanged();
+    }
   }
 
-  protected _handleFocus(e : CustomEvent) {
-	e.stopPropagation();
-	const event = new CustomEvent('focus', {
-        composed: true,
-        cancelable: true,
-        bubbles: true
-	});
-	this.dispatchEvent(event);		 
+  protected _handleFocus(e: CustomEvent) {
+    e.stopPropagation();
+    const event = new CustomEvent("focus", {
+      composed: true,
+      cancelable: true,
+      bubbles: true,
+    });
+    this.dispatchEvent(event);
   }
 
-  protected _handleBlur(e : CustomEvent) {
-	e.stopPropagation();
-	const event = new CustomEvent('blur', {
-        composed: true,
-        cancelable: true,
-        bubbles: true
-	});
-	this.dispatchEvent(event);		 
+  protected _handleBlur(e: CustomEvent) {
+    e.stopPropagation();
+    const event = new CustomEvent("blur", {
+      composed: true,
+      cancelable: true,
+      bubbles: true,
+    });
+    this.dispatchEvent(event);
   }
 
-  _set_theme(theme : string) {
+  _set_theme(theme: string) {
     this.theme = theme;
   }
 
@@ -285,9 +353,10 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     if (this._updated) {
       return;
     }
-	if (this._comboBox.opened) {
-      const captionElements = this._comboBox._scroller.getElementsByClassName('color-caption');
-      for (let i=0;i<captionElements.length;i++) {
+    if (this._comboBox.opened) {
+      const captionElements =
+        this._comboBox._scroller.getElementsByClassName("color-caption");
+      for (let i = 0; i < captionElements.length; i++) {
         if (captionElements[i].captionMode === "HTML") {
           captionElements[i].children[0].innerHTML = captionElements[i].caption;
         }
@@ -301,66 +370,70 @@ export class ColorPicker extends ThemableMixin(LitElement) {
     // the common implementation of label, error message, helper
     // text and required indicator.
     return html`
-        <vaadin-custom-field 
-          part="field"
-          id="customfield" 
-          class="container"
-          .label="${this.label}" 
-          .helperText="${this.helperText}"
-          .errorMessage="${this.errorMessage}"
-          ?readonly=${this.readonly}
-          disabled=${ifDefined(this.disabled)}
-          invalid=${ifDefined(this.invalid)}
-          ?required=${this.required}
-          theme="${ifDefined(this.theme)}">
-
-          <div id="wrapper">
-            <input
-              id="colorpicker"
-              part="colorpicker"
-              ?readonly=${this.readonly}
-              disabled=${ifDefined(this.disabled)}
-              invalid=${ifDefined(this.invalid)}
-              theme="${ifDefined(this.theme)}"
-              type="color" 
-              .value="${this.color}"
-              @change=${this._handleChange}
-              @blur=${this._handleBlur}
-              @focus=${this._handleFocus}
-            >
-            <vaadin-combo-box
-              part="dropdown"
-	          id="combobox"
-              allow-custom-value
-              ?readonly=${this.readonly}
-              disabled=${ifDefined(this.disabled)}
-              invalid=${ifDefined(this.invalid)}
-              theme="${ifDefined(this.theme)}"
-              .items="${this._stripHtml(this.presets)}"
-              .value="${this.noclear ? this.color : ''}"
-              item-label-path="textCaption"
-              @change=${this._handlePreset}
-              @opened-changed=${this._updateCaptions}
-              @custom-value-set=${this._cssColorInput}
-              ${comboBoxRenderer(this.renderer, [])}
-              @blur=${this._handleBlur}
-              @focus=${this._handleFocus}
-            ></vaadin-combo-box>
-          </div>
+      <vaadin-custom-field
+        part="field"
+        id="customfield"
+        class="container"
+        .label="${this.label}"
+        .helperText="${this.helperText}"
+        .errorMessage="${this.errorMessage}"
+        readonly=${ifDefined(this.readonly)}
+        disabled=${ifDefined(this.disabled)}
+        invalid=${ifDefined(this.invalid)}
+        ?required=${this.required}
+        theme="${ifDefined(this.theme)}"
+      >
+        <div id="wrapper">
+          <input
+            id="colorpicker"
+            part="colorpicker"
+            ?readonly=${this.readonly}
+            disabled=${ifDefined(this.disabled)}
+            invalid=${ifDefined(this.invalid)}
+            theme="${ifDefined(this.theme)}"
+            type="color"
+            .value="${this.color}"
+            @change=${this._handleChange}
+            @blur=${this._handleBlur}
+            @focus=${this._handleFocus}
+          />
+          <vaadin-combo-box
+            part="dropdown"
+            id="combobox"
+            allow-custom-value
+            ?readonly=${this.readonly}
+            disabled=${ifDefined(this.disabled)}
+            invalid=${ifDefined(this.invalid)}
+            theme="${ifDefined(this.theme)}"
+            .items="${this._stripHtml(this.presets)}"
+            .value="${this.noclear ? this.color : ""}"
+            item-label-path="textCaption"
+            @change=${this._handlePreset}
+            @opened-changed=${this._updateCaptions}
+            @custom-value-set=${this._cssColorInput}
+            ${comboBoxRenderer(this.renderer, [])}
+            @blur=${this._handleBlur}
+            @focus=${this._handleFocus}
+          ></vaadin-combo-box>
+        </div>
         <slot name="tooltip"></slot>
+      </vaadin-custom-field>
     `;
   }
 
-  protected _stripHtml(presets : Preset[]) : Preset[] {
-    const stripped : Preset[] = [];
-    for (let i=0;i<presets.length;i++) {
-      if (presets[i].captionMode === 'HTML') {
-        var doc = new DOMParser().parseFromString(presets[i].caption, 'text/html');
-        const text = doc.body.textContent ? doc.body.textContent : '';
+  protected _stripHtml(presets: Preset[]): Preset[] {
+    const stripped: Preset[] = [];
+    for (let i = 0; i < presets.length; i++) {
+      if (presets[i].captionMode === "HTML") {
+        var doc = new DOMParser().parseFromString(
+          presets[i].caption,
+          "text/html"
+        );
+        const text = doc.body.textContent ? doc.body.textContent : "";
         presets[i].textCaption = text;
       } else {
-        presets[i].textCaption = presets[i].caption; 
-	  }
+        presets[i].textCaption = presets[i].caption;
+      }
       stripped.push(presets[i]);
     }
     return stripped;
@@ -373,12 +446,13 @@ export class ColorPicker extends ThemableMixin(LitElement) {
         <div
           part="color-preset-color"
           style="width: 20px; height: 20px; background: ${preset.color}; margin-right: 10px; border: solid 1px var(--lumo-contrast-10pct); border-radius: var(--lumo-border-radius-s);"
-        >          
-        </div>
-        <div class="color-caption" .captionMode=${preset.captionMode} .caption=${preset.caption}>
-          <div>
-            ${preset.textCaption}
-          </div>
+        ></div>
+        <div
+          class="color-caption"
+          .captionMode=${preset.captionMode}
+          .caption=${preset.caption}
+        >
+          <div>${preset.textCaption}</div>
         </div>
       </div>
     `;

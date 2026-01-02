@@ -12,8 +12,7 @@ import com.vaadin.flow.component.shared.HasTooltip;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.dom.ThemeList;
 
-import elemental.json.JsonArray;
-import elemental.json.JsonObject;
+import tools.jackson.databind.node.ArrayNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,20 +34,20 @@ public class ColorPickerTest {
         colorPicker
                 .setPresets(Arrays.asList(new ColorPreset("#00ff00", "Color 1"),
                         new ColorPreset("#ff0000", "Color 2")));
-        JsonArray presetsJson = (JsonArray) colorPicker.getElement()
+        ArrayNode presetsJson = (ArrayNode) colorPicker.getElement()
                 .getPropertyRaw("presets");
         Assert.assertEquals("Array should have 2 items", 2,
-                presetsJson.length());
-        JsonObject colorJson = presetsJson.get(0);
+                presetsJson.size());
+        var colorJson = presetsJson.get(0);
         Assert.assertEquals("Color is not correct", "#00ff00",
-                colorJson.getString("color"));
+                colorJson.get("color").asString());
         Assert.assertEquals("Caption is not correct", "Color 1",
-                colorJson.getString("caption"));
+                colorJson.get("caption").asString());
         colorJson = presetsJson.get(1);
         Assert.assertEquals("Color is not correct", "#ff0000",
-                colorJson.getString("color"));
+                colorJson.get("color").asString());
         Assert.assertEquals("Caption is not correct", "Color 2",
-                colorJson.getString("caption"));
+                colorJson.get("caption").asString());
     }
 
     @Test
